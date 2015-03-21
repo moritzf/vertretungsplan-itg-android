@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Vertretungsplan ITG</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="table_top">Std.   Kl.   Fach   Kommentar</string>
 </resources>

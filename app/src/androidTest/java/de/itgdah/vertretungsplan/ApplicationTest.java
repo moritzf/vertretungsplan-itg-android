@@ -1,4 +1,4 @@
-package app.vertretungsplan.itgdah2.de.vertretungsplanitg;
+package de.itgdah.vertretungsplan;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

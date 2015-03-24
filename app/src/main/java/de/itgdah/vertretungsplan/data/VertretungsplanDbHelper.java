@@ -1,7 +1,90 @@
 package de.itgdah.vertretungsplan.data;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
+
 /**
- * Created by moritz on 23.03.15.
+ * Manages a local database for the Vertretungsplan.
  */
-public class VertretungsplanDbHelper {
+public class VertretungsplanDbHelper extends SQLiteOpenHelper {
+
+    /* Denotes the database version. Increment this value,
+     if the database schema changes */
+    private static final int DATABASE_VERSION = 1;
+
+    public static final String DATABASE_NAME = "vertretungsplan.db";
+
+    public VertretungsplanDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+
+        final String SQL_CREATE_DAYS_TABLE = "CREATE TABLE" +
+                Days.TABLE_NAME + " (" +
+                Days.COLUMN_DAY_ID + " INTEGER " + "PRIMARY KEY " +
+                "AUTOINCREMENT," +
+                Days.COLUMN_DATE + " TEXT" + ")";
+
+        final String SQL_CREATE_ABSENT_CLASSES_TABLE = "CREATE TABLE" +
+                AbsentClasses.TABLE_NAME + " (" +
+                AbsentClasses.COLUMN_ABSENT_CLASS_ID + " INTEGER PRIMARY KEY " +
+                "AUTOINCREMENT," +
+                "FOREIGN KEY (" + AbsentClasses.COLUMN_DAY_ID + ") " +
+                "REFERENCES" + Days.TABLE_NAME + "(" + Days.COLUMN_DAY_ID +
+                ")," +
+                AbsentClasses.COLUMN_ABSENT_CLASS_ID + " INTEGER PRIMARY KEY " +
+                "AUTOINCREMENT," +
+                AbsentClasses.COLUMN_MESSAGE + " TEXT";
+
+        final String SQL_CREATE_GENERAL_INFO_TABLE = "CREATE TABLE" +
+                GeneralInfo.TABLE_NAME + " (" +
+                GeneralInfo.COLUMN_GENERAL_INFO_ROW_ID + " INTEGER PRIMARY " +
+                "KEY AUTOINCREMENT," +
+                "FOREIGN KEY (" + GeneralInfo.COLUMN_DAY_ID + ") " +
+                "REFERENCES" + Days.TABLE_NAME + "(" + Days.COLUMN_DAY_ID +
+                ")," +
+                GeneralInfo.COLUMN_MESSAGE + " TEXT";
+
+
+
+        final String SQL_CREATE_VERTRETUNGEN_TABLE = "CREATE TABLE" +
+                Vertretungen.TABLE_NAME + " (" +
+                Vertretungen.COLUMN_VERTRETUNGEN_ROW_ID + " INTEGER PRIMARY " +
+                "KEY AUTOINCREMENT," +
+                "FOREIGN KEY (" + Vertretungen.COLUMN_DAY_ID + ") REFERENCES " +
+                Days.TABLE_NAME + "(" + Days.COLUMN_DAY_ID + ")," +
+                /* Because the fields are used as TEXT in the app,
+                they are saved as TEXT form in the database as well,
+                even though another data type might be more appropriate */
+                Vertretungen.COLUMN_PERIOD + "TEXT," +
+                Vertretungen.COLUMN_CLASS + "TEXT," +
+                Vertretungen.COLUMN_SUBJECT + "TEXT," +
+                Vertretungen.COLUMN_ROOM + "TEXT," +
+                Vertretungen.COLUMN_COMMENT + "TEXT" + ")";
+
+        db.execSQL(SQL_CREATE_DAYS_TABLE);
+        db.execSQL(SQL_CREATE_ABSENT_CLASSES_TABLE);
+        db.execSQL(SQL_CREATE_GENERAL_INFO_TABLE);
+        db.execSQL(SQL_CREATE_VERTRETUNGEN_TABLE);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // This database is only a cache for online data, so its upgrade policy is
+        // to simply to discard the data and start over
+        // Only fires when database schema version changes
+        db.execSQL("DROP TABLE IF EXISTS " + Days.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + AbsentClasses.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + GeneralInfo.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Vertretungen.TABLE_NAME);
+        onCreate(db);
+    }
 }

@@ -7,9 +7,9 @@ import android.provider.BaseColumns;
  */
 public class VertretungsplanContract {
 
-    /* Inner class that defines the table contents of the Vertretungenen
+    /* Inner class that defines the table contents of the Vertretungen
     table. */
-    public static final class Vertretungenen implements BaseColumns {
+    public static final class Vertretungen implements BaseColumns {
 
         // Table name
         public static final String TABLE_NAME = "vertretungen";
@@ -55,10 +55,10 @@ public class VertretungsplanContract {
                 "general_info_row_id";
 
         // Message of the announcement.
-        public static final String  COLUMN_MESSAGE = "message";
+        public static final String COLUMN_MESSAGE = "message";
 
         // Foreign key pointing to the days table
-        public static final String  COLUMN_DAY_ID = "day_id";
+        public static final String COLUMN_DAY_ID = "day_id";
 
     }
 
@@ -74,7 +74,12 @@ public class VertretungsplanContract {
                 "day_id";
 
         // date of the day
-        public static final String  COLUMN_DATE = "date";
+        public static final String COLUMN_DATE = "date";
+
+        /* Time of the last update. Currently all days have the same 'last
+         updated' value. This field is used to check whether or not the
+         database needs to be updated. */
+        public static String COLUMN_LAST_UPDATED = "last_updated";
 
     }
 
@@ -90,7 +95,7 @@ public class VertretungsplanContract {
                 "absent_class_id";
 
         // Message defining the absent class and the reason why it is absent.
-        public static final String  COLUMN_MESSAGE = "message";
+        public static final String COLUMN_MESSAGE = "message";
 
         // Foreign key pointing to the days table.
         public static final String COLUMN_DAY_ID = "day_id";

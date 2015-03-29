@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
-import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
 
 /**
  * Manages a local database for the Vertretungsplan.
@@ -29,27 +29,25 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_DAYS_TABLE = "CREATE TABLE" +
                 Days.TABLE_NAME + " (" +
-                Days.COLUMN_DAY_ID + " INTEGER " + "PRIMARY KEY " +
+                Days._ID + " INTEGER " + "PRIMARY KEY " +
                 "AUTOINCREMENT," +
                 Days.COLUMN_DATE + " TEXT" + ")";
 
         final String SQL_CREATE_ABSENT_CLASSES_TABLE = "CREATE TABLE" +
                 AbsentClasses.TABLE_NAME + " (" +
-                AbsentClasses.COLUMN_ABSENT_CLASS_ID + " INTEGER PRIMARY KEY " +
+                AbsentClasses._ID + " INTEGER PRIMARY KEY " +
                 "AUTOINCREMENT," +
-                "FOREIGN KEY (" + AbsentClasses.COLUMN_DAY_ID + ") " +
-                "REFERENCES" + Days.TABLE_NAME + "(" + Days.COLUMN_DAY_ID +
+                "FOREIGN KEY (" + AbsentClasses.COLUMN_DAYS_KEY + ") " +
+                "REFERENCES" + Days.TABLE_NAME + "(" + Days._ID +
                 ")," +
-                AbsentClasses.COLUMN_ABSENT_CLASS_ID + " INTEGER PRIMARY KEY " +
-                "AUTOINCREMENT," +
-                AbsentClasses.COLUMN_MESSAGE + " TEXT";
+                 AbsentClasses.COLUMN_MESSAGE + " TEXT";
 
         final String SQL_CREATE_GENERAL_INFO_TABLE = "CREATE TABLE" +
                 GeneralInfo.TABLE_NAME + " (" +
-                GeneralInfo.COLUMN_GENERAL_INFO_ROW_ID + " INTEGER PRIMARY " +
+                GeneralInfo._ID + " INTEGER PRIMARY " +
                 "KEY AUTOINCREMENT," +
-                "FOREIGN KEY (" + GeneralInfo.COLUMN_DAY_ID + ") " +
-                "REFERENCES" + Days.TABLE_NAME + "(" + Days.COLUMN_DAY_ID +
+                "FOREIGN KEY (" + GeneralInfo.COLUMN_DAYS_KEY + ") " +
+                "REFERENCES" + Days.TABLE_NAME + "(" + Days._ID +
                 ")," +
                 GeneralInfo.COLUMN_MESSAGE + " TEXT";
 
@@ -57,16 +55,18 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_VERTRETUNGEN_TABLE = "CREATE TABLE" +
                 Vertretungen.TABLE_NAME + " (" +
-                Vertretungen.COLUMN_VERTRETUNGEN_ROW_ID + " INTEGER PRIMARY " +
+                Vertretungen._ID + " INTEGER PRIMARY " +
                 "KEY AUTOINCREMENT," +
-                "FOREIGN KEY (" + Vertretungen.COLUMN_DAY_ID + ") REFERENCES " +
-                Days.TABLE_NAME + "(" + Days.COLUMN_DAY_ID + ")," +
+                "FOREIGN KEY (" + Vertretungen.COLUMN_DAYS_KEY + ") " +
+                "REFERENCES " +
+                Days.TABLE_NAME + "(" + Days._ID + ")," +
                 /* Because the fields are used as TEXT in the app,
                 they are saved as TEXT form in the database as well,
                 even though another data type might be more appropriate */
                 Vertretungen.COLUMN_PERIOD + "TEXT," +
                 Vertretungen.COLUMN_CLASS + "TEXT," +
                 Vertretungen.COLUMN_SUBJECT + "TEXT," +
+                Vertretungen.COLUMN_VERTRETEN_DURCH + "TEXT," +
                 Vertretungen.COLUMN_ROOM + "TEXT," +
                 Vertretungen.COLUMN_COMMENT + "TEXT" + ")";
 

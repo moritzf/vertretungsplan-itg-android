@@ -1,9 +1,9 @@
 package de.itgdah.vertretungsplan;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import de.itgdah.vertretungsplan.R;
 
 
 public class MainActivity extends Activity {
@@ -38,7 +36,7 @@ public class MainActivity extends Activity {
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.main_drawer_listitem, mTitles));
+                android.R.layout.simple_list_item_1, mTitles));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 

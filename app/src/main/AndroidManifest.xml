@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
     package="de.itgdah.vertretungsplan" >
 
+=======
+    package="app.vertretungsplan.itgdah2.de.vertretungsplanitg">
+>>>>>>> a5a424375701f4684909bf2e9daa0b29b358217a
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

@@ -1,4 +1,9 @@
 <resources>
+    <array name="drawer_titles">
+        <item>Vertretungsplan</item>
+        <item>Mein Vertretungsplan</item>
+    </array>
+
     <string name="app_name">Vertretungsplan ITG</string>
     <string name="menu_bar_title">Gesamter Vertretungsplan</string>
     <string name="action_settings">Settings</string>

@@ -2,7 +2,18 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="AppTheme.ActionBar" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:height">56dp</item>
+        <item name="android:background">#ff3e54e3</item>
+        <item name="android:width">110dp</item>
+        <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="AppTheme.ActionBar.Title" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColor">#ffffff</item>
     </style>
 
 </resources>

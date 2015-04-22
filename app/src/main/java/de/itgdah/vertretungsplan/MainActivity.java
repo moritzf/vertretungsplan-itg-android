@@ -3,6 +3,7 @@ package de.itgdah.vertretungsplan;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
@@ -15,12 +16,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import de.itgdah.vertretungsplan.sync.FetchVertretungsplanTask;
+
 
 public class MainActivity extends Activity {
 
     public String[] mTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    public static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,7 @@ public class MainActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_contentframe, new VertretungsplanFragment())
                 .commit();
+        mContext = getApplicationContext();
     }
 
 
@@ -88,6 +93,10 @@ public class MainActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
+            ListView listView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
+             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1);
+            new FetchVertretungsplanTask(arrayAdapter).execute();
+            listView.setAdapter(arrayAdapter);
             return rootView;
         }
     }

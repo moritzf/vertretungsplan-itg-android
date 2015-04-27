@@ -212,7 +212,7 @@ public class VertretungsplanParser {
 
     /**
      * Splits the specified row into six tokens (period, class, subject,
-     * vertreten_durch, room and comment) and returns them as an fixed-length
+     * vertreten_durch, room and comment) and returns them as a fixed-length
      * array.
      */
     private String[]

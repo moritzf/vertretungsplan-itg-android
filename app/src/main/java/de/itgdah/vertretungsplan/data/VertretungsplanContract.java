@@ -102,6 +102,10 @@ public class VertretungsplanContract {
         public static Uri buildVertretungenUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
+        public static String getDateFromUri(Uri uri) {
+            return uri.getPathSegments().get(1); //"authority/vertretungen/date",
+        }
     }
 
     /* Inner class that defines the table contents of the general_info

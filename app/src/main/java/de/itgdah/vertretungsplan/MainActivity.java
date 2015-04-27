@@ -94,7 +94,7 @@ public class MainActivity extends Activity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
             ListView listView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
-             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1);
+             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_2);
             new FetchVertretungsplanTask(arrayAdapter).execute();
             listView.setAdapter(arrayAdapter);
             return rootView;

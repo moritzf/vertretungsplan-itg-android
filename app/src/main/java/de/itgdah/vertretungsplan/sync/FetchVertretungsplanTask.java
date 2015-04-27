@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.SimpleCursorAdapter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,10 +23,10 @@ import java.util.regex.Pattern;
  * Created by moritz on 24.03.15.
  */
 public class FetchVertretungsplanTask extends AsyncTask<Void, Void, String[]> {
-    private ArrayAdapter<String> arrayAdapter;
+    private SimpleCursorAdapter adapter;
 
-    public FetchVertretungsplanTask(ArrayAdapter<String> arrayAdapter) {
-        this.arrayAdapter = arrayAdapter;
+    public FetchVertretungsplanTask(SimpleCursorAdapter adapter) {
+        this.adapter = adapter;
     }
 
     @Override

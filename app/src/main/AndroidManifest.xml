@@ -16,6 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="de.itgdah.vertretungsplan"
+            android:name=".data.VertretungsplanProvider" />
     </application>
 
 </manifest>

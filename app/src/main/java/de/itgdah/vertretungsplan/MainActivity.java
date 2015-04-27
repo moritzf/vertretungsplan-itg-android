@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
@@ -15,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
+import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.sync.FetchVertretungsplanTask;
 
 
@@ -78,6 +81,9 @@ public class MainActivity extends Activity {
      */
     public static class VertretungsplanFragment extends Fragment {
 
+
+        private Cursor mCursor;
+
         public VertretungsplanFragment() {
         }
 
@@ -94,9 +100,35 @@ public class MainActivity extends Activity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
             ListView listView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
-             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_2);
-            new FetchVertretungsplanTask(arrayAdapter).execute();
-            listView.setAdapter(arrayAdapter);
+            String[] mVertretungsplanListColumns = {
+                    VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
+                    VertretungsplanContract.Vertretungen.COLUMN_CLASS,
+                    VertretungsplanContract.Vertretungen.COLUMN_SUBJECT,
+                    VertretungsplanContract.Vertretungen.COLUMN_COMMENT,
+            };
+
+            int[] mVertretungsplanListItems = {
+                    R.id.textView, R.id.textView2, R.id.textView3, R.id.textView5
+            };
+
+            String mSelectionClause = null;
+            String[] mSelectionArgs = {""};
+            mCursor = getActivity().getContentResolver().query(
+                    VertretungsplanContract.Vertretungen.CONTENT_URI,
+                    mVertretungsplanListColumns,
+                    mSelectionClause,
+                    mSelectionArgs,
+                    null
+            );
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                    getActivity(),
+                    R.layout.main_fragment_vertretungsplan_listitem,
+                    mCursor,
+                    mVertretungsplanListColumns, // column names
+                    mVertretungsplanListItems, // view ids
+                    0);
+            new FetchVertretungsplanTask(adapter).execute();
+            listView.setAdapter(adapter);
             return rootView;
         }
     }

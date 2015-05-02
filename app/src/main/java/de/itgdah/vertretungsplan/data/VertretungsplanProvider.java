@@ -77,9 +77,14 @@ public class VertretungsplanProvider extends ContentProvider {
                 returnCursor = getVertretungenByDate(uri, projection, sortOrder);
                 break;
             }
+            case DAYS: {
+                returnCursor = mDbHelper.getReadableDatabase().query(Days
+                        .TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
-
         }
         return returnCursor;
     }

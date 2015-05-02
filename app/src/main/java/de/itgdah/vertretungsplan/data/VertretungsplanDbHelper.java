@@ -27,48 +27,51 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        final String SQL_CREATE_DAYS_TABLE = "CREATE TABLE" +
+        final String SQL_CREATE_DAYS_TABLE = "CREATE TABLE " +
                 Days.TABLE_NAME + " (" +
                 Days._ID + " INTEGER " + "PRIMARY KEY " +
                 "AUTOINCREMENT," +
                 Days.COLUMN_DATE + " TEXT" + ")";
 
-        final String SQL_CREATE_ABSENT_CLASSES_TABLE = "CREATE TABLE" +
+        final String SQL_CREATE_ABSENT_CLASSES_TABLE = "CREATE TABLE " +
                 AbsentClasses.TABLE_NAME + " (" +
                 AbsentClasses._ID + " INTEGER PRIMARY KEY " +
                 "AUTOINCREMENT," +
-                "FOREIGN KEY (" + AbsentClasses.COLUMN_DAYS_KEY + ") " +
-                "REFERENCES" + Days.TABLE_NAME + "(" + Days._ID +
-                ")," +
-                 AbsentClasses.COLUMN_MESSAGE + " TEXT";
+                AbsentClasses.COLUMN_DAYS_KEY + " INTEGER, " +
+                AbsentClasses.COLUMN_MESSAGE + " TEXT," +
+                " FOREIGN KEY (" + AbsentClasses.COLUMN_DAYS_KEY + ") " +
+                "REFERENCES " + Days.TABLE_NAME + " (" + Days._ID +
+                ") )";
 
-        final String SQL_CREATE_GENERAL_INFO_TABLE = "CREATE TABLE" +
+        final String SQL_CREATE_GENERAL_INFO_TABLE = "CREATE TABLE " +
                 GeneralInfo.TABLE_NAME + " (" +
                 GeneralInfo._ID + " INTEGER PRIMARY " +
                 "KEY AUTOINCREMENT," +
+                GeneralInfo.COLUMN_DAYS_KEY + " INTEGER, " +
+                GeneralInfo.COLUMN_MESSAGE + " TEXT, " +
                 "FOREIGN KEY (" + GeneralInfo.COLUMN_DAYS_KEY + ") " +
-                "REFERENCES" + Days.TABLE_NAME + "(" + Days._ID +
-                ")," +
-                GeneralInfo.COLUMN_MESSAGE + " TEXT";
+                "REFERENCES " + Days.TABLE_NAME + " (" + Days._ID +
+                ") )";
 
 
 
-        final String SQL_CREATE_VERTRETUNGEN_TABLE = "CREATE TABLE" +
+        final String SQL_CREATE_VERTRETUNGEN_TABLE = "CREATE TABLE " +
                 Vertretungen.TABLE_NAME + " (" +
                 Vertretungen._ID + " INTEGER PRIMARY " +
                 "KEY AUTOINCREMENT," +
+                Vertretungen.COLUMN_DAYS_KEY + " INTEGER, " +
+                Vertretungen.COLUMN_PERIOD + " TEXT," +
+                Vertretungen.COLUMN_CLASS + " TEXT," +
+                Vertretungen.COLUMN_SUBJECT + " TEXT," +
+                Vertretungen.COLUMN_VERTRETEN_DURCH + " TEXT," +
+                Vertretungen.COLUMN_ROOM + " TEXT," +
+                Vertretungen.COLUMN_COMMENT + " TEXT, " +
                 "FOREIGN KEY (" + Vertretungen.COLUMN_DAYS_KEY + ") " +
                 "REFERENCES " +
-                Days.TABLE_NAME + "(" + Days._ID + ")," +
+                Days.TABLE_NAME + " (" + Days._ID + ") )";
                 /* Because the fields are used as TEXT in the app,
                 they are saved as TEXT form in the database as well,
                 even though another data type might be more appropriate */
-                Vertretungen.COLUMN_PERIOD + "TEXT," +
-                Vertretungen.COLUMN_CLASS + "TEXT," +
-                Vertretungen.COLUMN_SUBJECT + "TEXT," +
-                Vertretungen.COLUMN_VERTRETEN_DURCH + "TEXT," +
-                Vertretungen.COLUMN_ROOM + "TEXT," +
-                Vertretungen.COLUMN_COMMENT + "TEXT" + ")";
 
         db.execSQL(SQL_CREATE_DAYS_TABLE);
         db.execSQL(SQL_CREATE_ABSENT_CLASSES_TABLE);

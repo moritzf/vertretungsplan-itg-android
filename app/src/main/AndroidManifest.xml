@@ -18,7 +18,8 @@
         </activity>
         <provider
             android:authorities="de.itgdah.vertretungsplan"
-            android:name=".data.VertretungsplanProvider" />
+            android:name=".data.VertretungsplanProvider"
+            android:enabled="true"/>
     </application>
 
 </manifest>

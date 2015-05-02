@@ -1,4 +1,4 @@
-package de.itgdah.vertretungsplan.sync;
+package de.itgdah.vertretungsplan.web;
 
 import android.util.Base64;
 

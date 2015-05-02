@@ -14,8 +14,7 @@ import java.util.Date;
 public class VertretungsplanContract {
 
     // The "Content authority" is a name for the entire content provider.
-    public static final String CONTENT_AUTHORITY = "de.itgdah.vertretungsplan" +
-            ".provider";
+    public static final String CONTENT_AUTHORITY = "de.itgdah.vertretungsplan";
 
     // Base of all URI's which are used to interact with the content provider.
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
@@ -43,6 +42,11 @@ public class VertretungsplanContract {
         // it must be converted to milliseconds in order to be converted to valid date.
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         return sdf.format(date);
+    }
+
+    public static String convertDbDateStringToDatabaseFriendlyFormat(String
+                                                                             date) {
+        return date.replace(".", "");
     }
 
     /**

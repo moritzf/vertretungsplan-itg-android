@@ -12,13 +12,22 @@ import android.widget.SimpleCursorAdapter;
 
 import org.jsoup.nodes.Document;
 
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
+import de.itgdah.vertretungsplan.Utility;
 
 /**
  * Created by moritz on 24.03.15.
  */
 public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
+    private final String LOG_TAG = "asyncTask";
+
     private final SimpleCursorAdapter adapter;
     private final Context mContext;
 
@@ -59,10 +68,11 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
             Document doc = parser.getDocumentViaLogin(VertretungsplanParser.URL_VERTRETUNGSPLAN);
             String[] dates = parser.getAvailableVertretungsplaeneDates(doc);
             Log.v("async", "connection established");
+            DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
             if (dates != null) {
                 for(String date : dates) {
-                    addDate(VertretungsplanContract
-                            .convertDbDateStringToDatabaseFriendlyFormat(date));
+                    Date dateObj = dateFormat.parse(date, new ParsePosition(4));
+                    addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
                 }
 
             }
@@ -75,7 +85,7 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
 
     protected void onPostExecute(Cursor cursor) {
         if (cursor != null) {
-           Log.v("async","Count dates " + Integer.toString(cursor.getCount()));
+           Log.v(LOG_TAG, "Count dates " + Integer.toString(cursor.getCount()));
             DatabaseUtils.dumpCursor(cursor);
             adapter.swapCursor(cursor);
 

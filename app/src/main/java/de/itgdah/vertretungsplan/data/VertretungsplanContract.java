@@ -4,9 +4,11 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by moritz on 23.03.15.
@@ -33,20 +35,14 @@ public class VertretungsplanContract {
     public static final String DATE_FORMAT = "yyyyMMdd";
 
     /**
-     * Converts Date class to a string representation, used for easy comparison and database lookup.
-     * @param date The input date
-     * @return a DB-friendly representation of the date, using the format defined in DATE_FORMAT.
+     * Converts the given date object to a database-friendly representation.
+     * @param date the date to be converted
+     *             preconditions: format: DateFormat.MEDIUM, Locale.GERMAN
+     * @return date converted to the database format specified in {@link VertretungsplanContract}
      */
-    public static String getDbDateString(Date date){
-        // Because the API returns a unix timestamp (measured in seconds),
-        // it must be converted to milliseconds in order to be converted to valid date.
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        return sdf.format(date);
-    }
-
-    public static String convertDbDateStringToDatabaseFriendlyFormat(String
-                                                                             date) {
-        return date.replace(".", "");
+    public static String convertDateToDatabaseFriendlyFormat(Date date) {
+        DateFormat dbFormatter = new SimpleDateFormat(VertretungsplanContract.DATE_FORMAT, Locale.GERMAN);
+        return dbFormatter.format(date);
     }
 
     /**
@@ -55,7 +51,7 @@ public class VertretungsplanContract {
      * @return the Date object
      */
     public static Date getDateFromDb(String dateText) {
-        SimpleDateFormat dbDateFormat = new SimpleDateFormat(DATE_FORMAT);
+        SimpleDateFormat dbDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
         try {
             return dbDateFormat.parse(dateText);
         } catch ( ParseException e ) {

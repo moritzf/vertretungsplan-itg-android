@@ -86,7 +86,7 @@ public class VertretungsplanContract {
         // Subject that is addressed by the Vertretungen
         public static final String COLUMN_SUBJECT = "subject";
 
-        // Defines the type of Vertretungen. This can be either a person or
+        // Defines the type of Vertretung. This can be either a person or
         // unsupervised work called EVA.
         public static final String COLUMN_VERTRETEN_DURCH = "vertreten_durch";
 
@@ -105,6 +105,11 @@ public class VertretungsplanContract {
 
         public static String getDateFromUri(Uri uri) {
             return uri.getPathSegments().get(1); //"authority/vertretungen/date",
+        }
+
+        // precondition: "uri of type "authority/vertretungen/date/id"
+        public static String getIdFromUri(Uri uri) {
+            return uri.getPathSegments().get(2);
         }
     }
 

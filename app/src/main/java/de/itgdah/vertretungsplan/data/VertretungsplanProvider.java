@@ -9,10 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
-import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
 
 /**
  * Created by moritz on 23.03.15.
@@ -37,6 +37,9 @@ public class VertretungsplanProvider extends ContentProvider {
     }
 
     private static final String sVertretungenDateSelection = Days.TABLE_NAME + "." + Days.COLUMN_DATE + "= ? ";
+    private static final String sVertretungenDateAndIdSelection = sVertretungenDateSelection + " " +
+            "AND " + Vertretungen.TABLE_NAME + "." + Vertretungen._ID + " = ?"; // first part of
+            // the selection is the same as sVertretungenDateSelection
 
     private Cursor getVertretungenByDate(Uri uri, String[] projection, String sortOrder) {
         String date = Vertretungen.getDateFromUri(uri);
@@ -45,6 +48,17 @@ public class VertretungsplanProvider extends ContentProvider {
         String selection = sVertretungenDateSelection;
         return sVertretungenByDateQueryBuilder.query(mDbHelper.getReadableDatabase(), projection,
                 selection, selectionArgs, null, null, sortOrder);
+    }
+
+    private Cursor getVertretungenByDateAndId(Uri uri, String[] projection, String sortOrder) {
+        String date = Vertretungen.getDateFromUri(uri);
+        String id = Vertretungen.getIdFromUri(uri);
+
+        String[] selectionArgs = {date, id};
+        String selection = sVertretungenDateAndIdSelection;
+        // same tables as VertretungenByDate
+        return sVertretungenByDateQueryBuilder.query(mDbHelper.getReadableDatabase(),
+                projection, selection, selectionArgs, null, null, sortOrder);
     }
 
 
@@ -62,8 +76,8 @@ public class VertretungsplanProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-       mDbHelper = new VertretungsplanDbHelper(getContext());
-       return true;
+        mDbHelper = new VertretungsplanDbHelper(getContext());
+        return true;
     }
 
     @Override
@@ -71,16 +85,35 @@ public class VertretungsplanProvider extends ContentProvider {
         // switch on the given uri and determine what request it is. After that the database can be
         // queried accordingly
         Cursor returnCursor;
-        switch(sUriMatcher.match(uri)) {
-            case VERTRETUNGEN_WITH_DATE:
-            {
+        switch (sUriMatcher.match(uri)) {
+            case VERTRETUNGEN: {
+                returnCursor = mDbHelper.getReadableDatabase().query(Vertretungen
+                                .TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            }
+            case VERTRETUNGEN_WITH_DATE: {
                 returnCursor = getVertretungenByDate(uri, projection, sortOrder);
+                break;
+            }
+            case VERTRETUNGEN_WITH_DATE_AND_ID: {
+                returnCursor = getVertretungenByDateAndId(uri, projection, sortOrder);
                 break;
             }
             case DAYS: {
                 returnCursor = mDbHelper.getReadableDatabase().query(Days
-                        .TABLE_NAME, projection, selection, selectionArgs,
+                                .TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
+                break;
+            }
+            case GENERAL_INFO: {
+                returnCursor = mDbHelper.getReadableDatabase().query(GeneralInfo.TABLE_NAME,
+                        projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            }
+            case ABSENT_CLASSES: {
+                returnCursor = mDbHelper.getReadableDatabase().query(AbsentClasses.TABLE_NAME,
+                        projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             }
             default:
@@ -88,6 +121,7 @@ public class VertretungsplanProvider extends ContentProvider {
         }
         return returnCursor;
     }
+
 
     @Override
     public String getType(Uri uri) {
@@ -130,8 +164,8 @@ public class VertretungsplanProvider extends ContentProvider {
                 break;
             }
             case DAYS: {
-               long _id = db.insert(Days.TABLE_NAME, null, values);
-                if( _id > 0) {
+                long _id = db.insert(Days.TABLE_NAME, null, values);
+                if (_id > 0) {
                     returnUri = Days.buildDaysUri(_id);
                 } else {
                     throw new SQLException("Failed to insert row into" + uri);
@@ -140,7 +174,7 @@ public class VertretungsplanProvider extends ContentProvider {
             }
             case ABSENT_CLASSES: {
                 long _id = db.insert(VertretungsplanContract.AbsentClasses.TABLE_NAME, null, values);
-                if( _id > 0) {
+                if (_id > 0) {
                     returnUri = VertretungsplanContract.AbsentClasses.buildAbsentClassesUri(_id);
                 } else {
                     throw new SQLException("Failed to insert row into" + uri);
@@ -150,7 +184,7 @@ public class VertretungsplanProvider extends ContentProvider {
             case GENERAL_INFO: {
                 long _id = db.insert(VertretungsplanContract.GeneralInfo.TABLE_NAME,
                         null, values);
-                if( _id > 0) {
+                if (_id > 0) {
                     returnUri = VertretungsplanContract.GeneralInfo
                             .buildGeneralInfoUri(_id);
                 } else {
@@ -193,7 +227,7 @@ public class VertretungsplanProvider extends ContentProvider {
 
         // null deletes all rows
         if (selection == null || rowsDeleted != 0) {
-           getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(uri, null);
         }
         return rowsDeleted;
     }

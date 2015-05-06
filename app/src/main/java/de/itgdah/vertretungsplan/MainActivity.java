@@ -101,27 +101,27 @@ public class MainActivity extends Activity {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
             ListView listView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
             String[] mVertretungsplanListColumns = {
-///*                    VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
-//                    VertretungsplanContract.Vertretungen.COLUMN_CLASS,
-//                    VertretungsplanContract.Vertretungen.COLUMN_SUBJECT,
-//                    VertretungsplanContract.Vertretungen.COLUMN_COMMENT,*/
-                    VertretungsplanContract.Days.COLUMN_DATE
+                    VertretungsplanContract.Vertretungen._ID,
+                    VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
+                    VertretungsplanContract.Vertretungen.COLUMN_CLASS,
+                    VertretungsplanContract.Vertretungen.COLUMN_SUBJECT,
+                    VertretungsplanContract.Vertretungen.COLUMN_COMMENT
             };
 
             int[] mVertretungsplanListItems = {
-                    //R.id.textView, R.id.textView2, R.id.textView3,
+                    R.id.textView, R.id.textView2, R.id.textView3,
                     R.id.textView5
             };
 
             String mSelectionClause = null;
-            String[] mSelectionArgs = {""};
-/*            mCursor = getActivity().getContentResolver().query(
+            String[] mSelectionArgs = null;
+            mCursor = getActivity().getContentResolver().query(
                     VertretungsplanContract.Vertretungen.CONTENT_URI,
                     mVertretungsplanListColumns,
                     mSelectionClause,
                     mSelectionArgs,
                     null
-            );*/
+            );
             SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                     getActivity(),
                     R.layout.main_fragment_vertretungsplan_listitem,

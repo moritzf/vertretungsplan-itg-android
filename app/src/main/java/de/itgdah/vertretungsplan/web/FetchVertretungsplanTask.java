@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -24,12 +23,13 @@ import java.util.Locale;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
-import de.itgdah.vertretungsplan.Utility;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
 
 /**
  * Created by moritz on 24.03.15.
  */
-public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
+public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
     private final String LOG_TAG = "asyncTask";
 
     private final SimpleCursorAdapter adapter;
@@ -43,23 +43,24 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
 
     /**
      * Inserts a new date into the days database table.
+     *
      * @param date format: yyyyMMdd
      * @return the row ID of the added date
      */
     private long addDate(String date) {
-       Cursor cursor = mContext.getContentResolver().query
-               (Days.CONTENT_URI, new String[] {Days._ID},
-                       Days.COLUMN_DATE + " = ?", new String[]{date},
-                       null);
-        if(cursor.moveToFirst()) {
+        Cursor cursor = mContext.getContentResolver().query
+                (Days.CONTENT_URI, new String[]{Days._ID},
+                        Days.COLUMN_DATE + " = ?", new String[]{date},
+                        null);
+        if (cursor.moveToFirst()) {
             int dateIdIndex = cursor.getColumnIndex(Days._ID);
             return cursor.getLong(dateIdIndex);
         } else {
-            ContentValues daysValue = new ContentValues();
-            daysValue.put(Days.COLUMN_DATE, date);
+            ContentValues dayValue = new ContentValues();
+            dayValue.put(Days.COLUMN_DATE, date);
 
             Uri dateInsertUri = mContext.getContentResolver().insert(Days
-                    .CONTENT_URI, daysValue);
+                    .CONTENT_URI, dayValue);
 
             return ContentUris.parseId(dateInsertUri);
         }
@@ -68,32 +69,120 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
     /**
      * Inserts a new entry into the vertretungsplan database table. Assumes that the associated
      * date of the entry, e.g. 20151105, is already present in the database.
+     *
      * @param entry Array containing all columns. Refer to {@link VertretungsplanParser} for
      *              further information.
-     * @param date the date which is associated with the entry.
+     * @param date  the date which is associated with the entry.
      * @return the row Id of the added entry
      */
-    private long addEntry(String[] entry, String date) {
-        long dateId = addDate(date);
-        /* Assumes that the date is already present in the database
-        // and therefore just returns the row id. The date row id is then used as a foreign key
-        in the vertretungsplan table. */
-        final String addEntrySelection = "";
-        final String[] addEntrySelectionArgs = new String[] {
-                    Long.toString(dateId),
-                    entry[0],
-                    entry[1],
-                    entry[2],
-                    entry[3],
-                    entry[4],
-                    entry[5],
+    private long addVertretungsplanEntry(String[] entry, String date) {
+        long dateId = getDateId(date);
+        /* The date row id is used
+        as a foreign key in the vertretungsplan table. */
+        final String addEntrySelection = Vertretungen.COLUMN_DAYS_KEY + " = ? AND " +
+                Vertretungen.COLUMN_PERIOD + " = ? AND " + Vertretungen.COLUMN_CLASS + " = ? AND" +
+                " " + Vertretungen.COLUMN_SUBJECT + " = ? AND " + Vertretungen
+                .COLUMN_VERTRETEN_DURCH + " = ? AND " + Vertretungen
+                .COLUMN_ROOM + " = " + "? AND " + Vertretungen.COLUMN_COMMENT + " = ?";
+        final String[] addEntrySelectionArgs = new String[]{
+                Long.toString(dateId),
+                entry[0],
+                entry[1],
+                entry[2],
+                entry[3],
+                entry[4],
+                entry[5],
         };
         Cursor cursor = mContext.getContentResolver().query(Vertretungen.CONTENT_URI, new
-                String[] {Vertretungen._ID}, addEntrySelection, addEntrySelectionArgs, null);
+                String[]{Vertretungen._ID}, addEntrySelection, addEntrySelectionArgs, null);
         if (cursor.moveToFirst()) {
-            int entryIdIndex = cursor.getColumnIndex(Days._ID);
+            int entryIdIndex = cursor.getColumnIndex(Vertretungen._ID);
             return cursor.getLong(entryIdIndex);
+        } else {
+            ContentValues entryValues = new ContentValues();
+            entryValues.put(Vertretungen.COLUMN_DAYS_KEY, dateId);
+            entryValues.put(Vertretungen.COLUMN_PERIOD, entry[0]);
+            entryValues.put(Vertretungen.COLUMN_CLASS, entry[1]);
+            entryValues.put(Vertretungen.COLUMN_SUBJECT, entry[2]);
+            entryValues.put(Vertretungen.COLUMN_VERTRETEN_DURCH, entry[3]);
+            entryValues.put(Vertretungen.COLUMN_ROOM, entry[4]);
+            entryValues.put(Vertretungen.COLUMN_COMMENT, entry[5]);
+
+            Uri vertretungenInsertUri = mContext.getContentResolver().insert(Vertretungen
+                    .CONTENT_URI, entryValues);
+            return ContentUris.parseId(vertretungenInsertUri);
         }
+    }
+
+    /**
+     * Adds a general info line to the database.
+     * @param generalInfo String containing one line of the general information.
+     * @param date the date associated with the general info.
+     * @return the row id of the added entry
+     */
+    private long addGeneralInfoEntry(String generalInfo, String date) {
+        long dateId = getDateId(date);
+        /* The date row id is used
+        as a foreign key in the general info table. */
+        final String addEntrySelection = GeneralInfo.COLUMN_DAYS_KEY + " = ? AND " + GeneralInfo
+                .COLUMN_MESSAGE + " = ?" ;
+        final String[] addEntrySelectionArgs = new String[]{
+                Long.toString(dateId),
+                generalInfo
+        };
+        Cursor cursor = mContext.getContentResolver().query(GeneralInfo.CONTENT_URI, new
+                String[]{GeneralInfo._ID}, addEntrySelection, addEntrySelectionArgs, null);
+        if (cursor.moveToFirst()) {
+            int entryIdIndex = cursor.getColumnIndex(GeneralInfo._ID);
+            return cursor.getLong(entryIdIndex);
+        } else {
+            ContentValues entryValues = new ContentValues();
+            entryValues.put(GeneralInfo.COLUMN_MESSAGE, generalInfo);
+            Uri generalInfoInsertUri = mContext.getContentResolver().insert(GeneralInfo
+                    .CONTENT_URI, entryValues);
+            return ContentUris.parseId(generalInfoInsertUri);
+        }
+    }
+
+    /**
+     * Adds a general info line to the database.
+     * @param absentClass String containing one absent class.
+     * @param date the date associated with the general info.
+     * @return the row id of the added entry
+     */
+    private long addAbsentClassesEntry(String absentClass, String date) {
+        long dateId = getDateId(date);
+        /* The date row id is used
+        as a foreign key in the absent classes table. */
+        final String addEntrySelection = AbsentClasses.COLUMN_DAYS_KEY + " = ? AND " + AbsentClasses
+                .COLUMN_MESSAGE + " = ?" ;
+        final String[] addEntrySelectionArgs = new String[]{
+                Long.toString(dateId),
+                absentClass
+        };
+        Cursor cursor = mContext.getContentResolver().query(AbsentClasses.CONTENT_URI, new
+                String[]{AbsentClasses._ID}, addEntrySelection, addEntrySelectionArgs, null);
+        if (cursor.moveToFirst()) {
+            int entryIdIndex = cursor.getColumnIndex(AbsentClasses._ID);
+            return cursor.getLong(entryIdIndex);
+        } else {
+            ContentValues entryValues = new ContentValues();
+            entryValues.put(AbsentClasses.COLUMN_MESSAGE, absentClass);
+            Uri absentClassesInsertUri = mContext.getContentResolver().insert(AbsentClasses
+                    .CONTENT_URI, entryValues);
+            return ContentUris.parseId(absentClassesInsertUri);
+        }
+    }
+
+    /**
+     * Gets the date id in the days table of the specified date.
+     * @precondition The date is present in the database
+     * @param date Assumes that the is formatted according to {@link VertretungsplanContract}
+     * @return the row id of the date
+     */
+    private long getDateId(String date) {
+        return addDate(date); // retrieves the row id of the date as the date has already been
+        // inserted
     }
 
     @Override
@@ -108,30 +197,28 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor>{
             Log.v("async", "connection established");
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
             if (dates != null) {
-                for(String date : dates) {
+                for (String date : dates) {
                     Date dateObj = dateFormat.parse(date, new ParsePosition(4));
                     addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
                 }
 
             }
             if (vertretungsplan != null) {
-               for (String[] entry : vertretungsplan) {
-                   addEntry(entry, dates[0]);
-               }
+                for (String[] entry : vertretungsplan) {
+                    addVertretungsplanEntry(entry, dates[0]);
+                }
             }
         } catch (Exception e) {
             Log.e("Error", "error");
         }
         return mContext.getContentResolver().query(VertretungsplanContract.Vertretungen.CONTENT_URI,
-                null, null, null, null );
+                null, null, null, null);
     }
 
     protected void onPostExecute(Cursor cursor) {
         if (cursor != null) {
-           Log.v(LOG_TAG, "Count dates " + Integer.toString(cursor.getCount()));
-            DatabaseUtils.dumpCursor(cursor);
+            Log.v(LOG_TAG, "Count entries " + Integer.toString(cursor.getCount()));
             adapter.swapCursor(cursor);
-
         }
     }
 }

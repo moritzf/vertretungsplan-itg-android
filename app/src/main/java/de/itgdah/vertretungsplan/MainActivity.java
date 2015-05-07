@@ -101,11 +101,11 @@ public class MainActivity extends Activity {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
             ListView listView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
             String[] mVertretungsplanListColumns = {
-                    VertretungsplanContract.Vertretungen._ID,
                     VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
                     VertretungsplanContract.Vertretungen.COLUMN_CLASS,
                     VertretungsplanContract.Vertretungen.COLUMN_SUBJECT,
-                    VertretungsplanContract.Vertretungen.COLUMN_COMMENT
+                    VertretungsplanContract.Vertretungen.COLUMN_COMMENT,
+                    VertretungsplanContract.Vertretungen._ID
             };
 
             int[] mVertretungsplanListItems = {

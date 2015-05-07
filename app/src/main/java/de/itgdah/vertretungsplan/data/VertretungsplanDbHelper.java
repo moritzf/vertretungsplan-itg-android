@@ -73,6 +73,7 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
                 they are saved as TEXT form in the database as well,
                 even though another data type might be more appropriate */
 
+
         db.execSQL(SQL_CREATE_DAYS_TABLE);
         db.execSQL(SQL_CREATE_ABSENT_CLASSES_TABLE);
         db.execSQL(SQL_CREATE_GENERAL_INFO_TABLE);

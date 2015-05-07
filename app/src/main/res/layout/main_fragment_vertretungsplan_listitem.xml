@@ -36,25 +36,14 @@
         android:layout_marginLeft="8dp" />
 
     <TextView
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Raum"
-        android:id="@+id/textView4"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/textView3"
-        android:layout_toEndOf="@+id/textView3"
-        android:layout_marginLeft="8dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Kommentar"
         android:id="@+id/textView5"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/textView4"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/textView3"/>
 </RelativeLayout>

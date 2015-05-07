@@ -17,7 +17,6 @@
         android:layout_below="@+id/toolbar"
         android:layout_alignParentLeft="true"
         android:divider="#ffb7b7b7"
-        android:background="@color/background_material_dark"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:dividerHeight="0.5dp"

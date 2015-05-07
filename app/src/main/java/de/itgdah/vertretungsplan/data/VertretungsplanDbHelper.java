@@ -8,6 +8,7 @@ import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.PersonalData;
 
 /**
  * Manages a local database for the Vertretungsplan.
@@ -72,6 +73,13 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
                 /* Because the fields are used as TEXT in the app,
                 they are saved as TEXT form in the database as well,
                 even though another data type might be more appropriate */
+
+        final String SQL_CREATE_PERSONAL_DATA_TABLE = "CREATE TABLE " +
+                PersonalData.TABLE_NAME + " (" +
+                PersonalData._ID + " INTEGER PRIMARY " + "KEY AUTOINCREMENT," +
+                PersonalData.COLUMN_CLASS + " TEXT" +
+                PersonalData.COLUMN_SUBJECT + " TEXT" + " )";
+
 
 
         db.execSQL(SQL_CREATE_DAYS_TABLE);

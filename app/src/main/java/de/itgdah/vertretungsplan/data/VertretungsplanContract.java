@@ -27,6 +27,7 @@ public class VertretungsplanContract {
     public static final String PATH_VERTRETUNGEN = "vertretungen";
     public static final String PATH_ABSENT_CLASSES = "absent_classes";
     public static final String PATH_GENERAL_INFO = "general_info";
+    public static final String PATH_PERSONAL_DATA = "personal_data";
 
 
 
@@ -193,5 +194,31 @@ public class VertretungsplanContract {
         public static Uri buildAbsentClassesUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+    }
+
+    /* Inner class that defines the table contents of the personal data table. It's used to save
+    the user subjects and the class of the user. This information is in turn used to select the
+    entries of the personal vertretungsplan.
+     */
+    public static final class PersonalData implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath
+                (PATH_PERSONAL_DATA).build();
+
+        public static final String CONTENT_TYPE =
+                "vnd.android.cursor.dir/vnd." + CONTENT_AUTHORITY + "/" +
+                        PATH_PERSONAL_DATA;
+        public static final String CONTENT_ITEM_TYPE =
+                "vnd.android.cursor.item/vnd." + CONTENT_AUTHORITY + "/" +
+                        PATH_PERSONAL_DATA;
+
+        public static final String TABLE_NAME = "personal_data";
+
+        // The class that the user is in.
+        public static final String COLUMN_CLASS = "class";
+
+        // The subject that the user wants to have displayed in the personal vertretungsplan.
+        public static final String COLUMN_SUBJECT = "subject";
+
     }
 }

@@ -14,14 +14,9 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class VertretungsplanParser {
+public class VertretungsplanParser implements LoginConstants {
 
     /** Constants */
-
-    /** The login username */
-    private static final String USERNAME = "itg";
-    /** The login password */
-    private static final String PASSWORD = "ps2015vp_app";
 
     /** Used in the login method. */
     private static final String LOGIN = USERNAME + ":" + PASSWORD;

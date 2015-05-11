@@ -197,6 +197,8 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
             Log.v("async", "connection established");
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
             if (dates != null) {
+                mContext.getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
+                        null, null);
                 for (String date : dates) {
                     Date dateObj = dateFormat.parse(date, new ParsePosition(4));
                     addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
@@ -204,6 +206,8 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
 
             }
             if (vertretungsplan != null) {
+                mContext.getApplicationContext().getContentResolver().delete(Vertretungen
+                        .CONTENT_URI, null, null);
                 for (String[] entry : vertretungsplan) {
                     addVertretungsplanEntry(entry, dates[0]);
                 }

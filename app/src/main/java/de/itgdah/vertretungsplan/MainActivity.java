@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public static Context mContext;
+    public VertretungsplanFragment vertretungsplanFragment = new VertretungsplanFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class MainActivity extends Activity {
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.main_contentframe, new VertretungsplanFragment())
+                .replace(R.id.main_contentframe, vertretungsplanFragment)
                 .commit();
         mContext = getApplicationContext();
     }
@@ -69,8 +71,9 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_sync) {
+            Log.v("Main", "sync button");
+            vertretungsplanFragment.updateVertretungsplanList();
         }
 
         return super.onOptionsItemSelected(item);
@@ -83,6 +86,8 @@ public class MainActivity extends Activity {
 
 
         private Cursor mCursor;
+        private FetchVertretungsplanTask mFetchVertretungsplanTask;
+        private SimpleCursorAdapter mAdapter;
 
         public VertretungsplanFragment() {
         }
@@ -90,9 +95,22 @@ public class MainActivity extends Activity {
         @Override
         public void onActivityCreated(Bundle savedInstanceState){
             super.onActivityCreated(savedInstanceState);
+            setHasOptionsMenu(true);
             Toolbar toolbar=(Toolbar) getActivity().findViewById(R.id.toolbar);
             toolbar.inflateMenu(R.menu.menu_main);
             toolbar.setTitle(getResources().getStringArray(R.array.drawer_titles)[0]);
+            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    switch(menuItem.getItemId()) {
+                        case R.id.action_sync: {
+                            updateVertretungsplanList();
+                            break;
+                        }
+                    }
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -122,16 +140,20 @@ public class MainActivity extends Activity {
                     mSelectionArgs,
                     null
             );
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+            mAdapter = new SimpleCursorAdapter(
                     getActivity(),
                     R.layout.main_fragment_vertretungsplan_listitem,
                     mCursor,
                     mVertretungsplanListColumns, // column names
                     mVertretungsplanListItems, // view ids
                     0);
-            new FetchVertretungsplanTask(adapter, mContext).execute();
-            listView.setAdapter(adapter);
+            new FetchVertretungsplanTask(mAdapter, mContext).execute();
+            listView.setAdapter(mAdapter);
             return rootView;
+        }
+
+        public void updateVertretungsplanList() {
+            new FetchVertretungsplanTask(mAdapter, mContext).execute();
         }
     }
 

@@ -6,6 +6,6 @@
 
     <string name="app_name">Vertretungsplan ITG</string>
     <string name="menu_bar_title">Gesamter Vertretungsplan</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_sync">Sync</string>
     <string name="table_top">Std.   Kl.   Fach   Kommentar</string>
 </resources>

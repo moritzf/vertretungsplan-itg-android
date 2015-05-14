@@ -29,8 +29,9 @@ import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
 /**
  * Created by moritz on 24.03.15.
  */
-public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
-    private final String LOG_TAG = "asyncTask";
+public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
+
+    private final String LOG_TAG = FetchVertretungsplanTask.class.getSimpleName();
 
     private final SimpleCursorAdapter adapter;
     private final Context mContext;
@@ -116,8 +117,9 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
 
     /**
      * Adds a general info line to the database.
+     *
      * @param generalInfo String containing one line of the general information.
-     * @param date the date associated with the general info.
+     * @param date        the date associated with the general info.
      * @return the row id of the added entry
      */
     private long addGeneralInfoEntry(String generalInfo, String date) {
@@ -125,7 +127,7 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
         /* The date row id is used
         as a foreign key in the general info table. */
         final String addEntrySelection = GeneralInfo.COLUMN_DAYS_KEY + " = ? AND " + GeneralInfo
-                .COLUMN_MESSAGE + " = ?" ;
+                .COLUMN_MESSAGE + " = ?";
         final String[] addEntrySelectionArgs = new String[]{
                 Long.toString(dateId),
                 generalInfo
@@ -146,8 +148,9 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
 
     /**
      * Adds a general info line to the database.
+     *
      * @param absentClass String containing one absent class.
-     * @param date the date associated with the general info.
+     * @param date        the date associated with the general info.
      * @return the row id of the added entry
      */
     private long addAbsentClassesEntry(String absentClass, String date) {
@@ -155,7 +158,7 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
         /* The date row id is used
         as a foreign key in the absent classes table. */
         final String addEntrySelection = AbsentClasses.COLUMN_DAYS_KEY + " = ? AND " + AbsentClasses
-                .COLUMN_MESSAGE + " = ?" ;
+                .COLUMN_MESSAGE + " = ?";
         final String[] addEntrySelectionArgs = new String[]{
                 Long.toString(dateId),
                 absentClass
@@ -176,9 +179,10 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
 
     /**
      * Gets the date id in the days table of the specified date.
-     * @precondition The date is present in the database
+     *
      * @param date Assumes that the is formatted according to {@link VertretungsplanContract}
      * @return the row id of the date
+     * @precondition The date is present in the database
      */
     private long getDateId(String date) {
         return addDate(date); // retrieves the row id of the date as the date has already been
@@ -186,7 +190,7 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
     }
 
     @Override
-    protected Cursor doInBackground(Void... params) {
+    protected Void doInBackground(Void... params) {
         String[] vertretungenArray = null;
         VertretungsplanParser parser = new VertretungsplanParser();
         try {
@@ -215,15 +219,12 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Cursor> {
         } catch (Exception e) {
             Log.e("Error", "error");
         }
-        return mContext.getContentResolver().query(VertretungsplanContract.Vertretungen.CONTENT_URI,
-                null, null, null, null);
+        return null;
     }
 
-    protected void onPostExecute(Cursor cursor) {
-        if (cursor != null) {
-            Log.v(LOG_TAG, "Count entries " + Integer.toString(cursor.getCount()));
-            adapter.swapCursor(cursor);
-        }
+
+    protected void onPostExecute() {
+        super.onPostExecute(null);
     }
 }
 

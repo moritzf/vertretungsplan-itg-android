@@ -67,6 +67,7 @@ public class VertretungsplanProvider extends ContentProvider {
         final String authority = VertretungsplanContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, VertretungsplanContract.PATH_ABSENT_CLASSES, ABSENT_CLASSES);
+        matcher.addURI(authority, VertretungsplanContract.PATH_GENERAL_INFO, GENERAL_INFO);
         matcher.addURI(authority, VertretungsplanContract.PATH_DAYS, DAYS);
         matcher.addURI(authority, VertretungsplanContract.PATH_VERTRETUNGEN + "/#", VERTRETUNGEN_WITH_DATE);
         matcher.addURI(authority, VertretungsplanContract.PATH_VERTRETUNGEN, VERTRETUNGEN);
@@ -217,8 +218,9 @@ public class VertretungsplanProvider extends ContentProvider {
             case ABSENT_CLASSES:
                 rowsDeleted = db.delete(VertretungsplanContract.AbsentClasses
                         .TABLE_NAME, selection, selectionArgs);
+                break;
             case GENERAL_INFO:
-                rowsDeleted = db.delete(Vertretungen.TABLE_NAME, selection,
+                rowsDeleted = db.delete(GeneralInfo.TABLE_NAME, selection,
                         selectionArgs);
                 break;
             default:

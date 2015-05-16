@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -33,7 +33,6 @@ public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public static Context mContext;
-    public VertretungsplanFragment vertretungsplanFragment = new VertretungsplanFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +54,7 @@ public class MainActivity extends Activity {
 
         if(savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.main_contentframe, vertretungsplanFragment)
+                    .replace(R.id.main_contentframe, new VertretungsplanFragment())
                     .commit();
         }
         mContext = getApplicationContext();
@@ -64,25 +63,15 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        super.onCreateOptionsMenu(menu);
+        // Toolbar is used instead.
+        return false;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_sync) {
-            Log.v("Main", "sync button");
-            vertretungsplanFragment.updateVertretungsplanList();
-        }
-
-        return super.onOptionsItemSelected(item);
+        // Toolbar is used instead.
+        return false;
     }
 
     /**
@@ -91,11 +80,10 @@ public class MainActivity extends Activity {
     public static class VertretungsplanFragment extends Fragment implements LoaderManager
             .LoaderCallbacks<Cursor> {
 
-        private FetchVertretungsplanTask mTask = null;
         private static final String LOG_TAG = VertretungsplanFragment.class.getSimpleName();
-        private Cursor mCursor;
-        private FetchVertretungsplanTask mFetchVertretungsplanTask;
-        private SimpleCursorAdapter mAdapter;
+        private SimpleCursorAdapter mVertretungsplanAdapter;
+        private SimpleCursorAdapter mGeneralInfoAdapter;
+        private SimpleCursorAdapter mAbsentClassesAdapter;
 
         public VertretungsplanFragment() {
         }
@@ -131,7 +119,7 @@ public class MainActivity extends Activity {
         @Override
         public void onViewStateRestored(Bundle savedInstanceState) {
             super.onViewStateRestored(savedInstanceState);
-            mAdapter.changeCursor(mContext.getContentResolver().query
+            mVertretungsplanAdapter.changeCursor(mContext.getContentResolver().query
                     (VertretungsplanContract.Vertretungen.CONTENT_URI, null, null, null,
                             null));
         }
@@ -154,24 +142,35 @@ public class MainActivity extends Activity {
 
             String mSelectionClause = null;
             String[] mSelectionArgs = null;
-            mCursor = getActivity().getContentResolver().query(
+            Cursor mCursor = getActivity().getContentResolver().query(
                     VertretungsplanContract.Vertretungen.CONTENT_URI,
                     mVertretungsplanListColumns,
                     mSelectionClause,
                     mSelectionArgs,
                     null
             );
-            mAdapter = new SimpleCursorAdapter(
+            mVertretungsplanAdapter = new SimpleCursorAdapter(
                     getActivity(),
                     R.layout.main_fragment_vertretungsplan_listitem,
                     mCursor,
                     mVertretungsplanListColumns, // column names
                     mVertretungsplanListItems, // view ids
                     0);
+
+            mGeneralInfoAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout
+                    .simple_list_item_1, getActivity().getContentResolver().query
+                    (VertretungsplanContract.GeneralInfo.CONTENT_URI, null, null, null, null),
+                    new String[] {VertretungsplanContract.GeneralInfo.COLUMN_MESSAGE,
+                            VertretungsplanContract.GeneralInfo._ID}, new
+                    int[]{R.id
+                    .general_info_listview_item}, 0);
+//            mAbsentClassesAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout
+//                    .simple_list_item_1, getActivity().getContentResolver().query
+//                    (VertretungsplanContract.AbsentClasses.CONTENT_URI, null, null, null, null),
+//                    null, null, 0);
             if(savedInstanceState == null) {
                 Log.v(LOG_TAG, "Execute FetchWeatherTask");
-                    mTask = new FetchVertretungsplanTask(mAdapter, mContext);
-                    mTask.execute();
+                updateVertretungsplanList();
             }
         }
 
@@ -179,17 +178,20 @@ public class MainActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
-            ListView listView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
-            listView.setAdapter(mAdapter);
+            ListView vertretungsplanView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
+            vertretungsplanView.setAdapter(mVertretungsplanAdapter);
+            ListView generalInfoView = (ListView) rootView.findViewById(R.id.general_info_listview);
+            generalInfoView.setAdapter(mGeneralInfoAdapter);
+//            ListView absentClassesView = (ListView) rootView.findViewById(R.id
+//                    .absent_classes_listview);
+//            absentClassesView.setAdapter(mAbsentClassesAdapter);
             return rootView;
         }
 
         // BUGGY
         public void updateVertretungsplanList() {
-            if(mTask.getStatus() == AsyncTask.Status.FINISHED) {
-                mTask = new FetchVertretungsplanTask(mAdapter, mContext);
-                mTask.execute();
-            }
+                FetchVertretungsplanTask task = new FetchVertretungsplanTask(mContext);
+                task.execute();
         }
 
         @Override
@@ -201,12 +203,12 @@ public class MainActivity extends Activity {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            mAdapter.swapCursor(data);
+            mVertretungsplanAdapter.swapCursor(data);
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            mAdapter.swapCursor(null);
+            mVertretungsplanAdapter.swapCursor(null);
         }
     }
 

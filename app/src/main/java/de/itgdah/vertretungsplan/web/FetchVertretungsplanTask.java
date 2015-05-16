@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import org.jsoup.nodes.Document;
 
@@ -33,12 +34,9 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
 
     private final String LOG_TAG = FetchVertretungsplanTask.class.getSimpleName();
 
-    private final SimpleCursorAdapter adapter;
     private final Context mContext;
 
-    public FetchVertretungsplanTask(SimpleCursorAdapter adapter,
-                                    Context context) {
-        this.adapter = adapter;
+    public FetchVertretungsplanTask(Context context) {
         mContext = context;
     }
 
@@ -198,6 +196,8 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
             String[] dates = parser.getAvailableVertretungsplaeneDates(doc);
             HashMap<String, ArrayList<String[]>> vertretungsplanMap = parser.getVertretungsplan(doc);
             ArrayList<String[]> vertretungsplan = vertretungsplanMap.get(dates[0]);
+            ArrayList<String> generalInfo = parser.getGeneralInfo(doc).get(dates[1]);
+            ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[0]);
             Log.v("async", "connection established");
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
             if (dates != null) {
@@ -216,6 +216,20 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
                     addVertretungsplanEntry(entry, dates[0]);
                 }
             }
+            if (generalInfo != null) {
+                mContext.getApplicationContext().getContentResolver().delete(GeneralInfo
+                     .CONTENT_URI, null, null);
+                for (String info : generalInfo) {
+                    addGeneralInfoEntry(info, dates[1]);
+                }
+            }
+            if (absentClasses != null) {
+                mContext.getApplicationContext().getContentResolver().delete(AbsentClasses
+                        .CONTENT_URI, null, null);
+                for (String absentClass: absentClasses) {
+                    addAbsentClassesEntry(absentClass, dates[0]);
+                }
+            }
         } catch (Exception e) {
             Log.e("Error", "error");
         }
@@ -223,8 +237,10 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
     }
 
 
-    protected void onPostExecute() {
-        super.onPostExecute(null);
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        Toast.makeText(mContext, "Executed", Toast.LENGTH_SHORT).show();
     }
 }
 

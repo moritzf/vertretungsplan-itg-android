@@ -8,4 +8,7 @@
     <string name="menu_bar_title">Gesamter Vertretungsplan</string>
     <string name="action_sync">Sync</string>
     <string name="table_top">Std.   Kl.   Fach   Kommentar</string>
+    <string name="vertretungsplan_header">Vertretungen</string>
+    <string name="general_info_header">Allg. Infos</string>
+    <string name="absent_classes_header">Abwesende Klassen</string>
 </resources>

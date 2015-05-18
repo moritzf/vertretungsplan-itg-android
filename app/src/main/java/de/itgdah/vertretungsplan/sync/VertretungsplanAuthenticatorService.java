@@ -8,13 +8,16 @@ import android.os.IBinder;
  * Created by Moritz on 5/18/2015.
  */
 public class VertretungsplanAuthenticatorService extends Service {
+
+    private VertretungsplanAuthenticator  mAuthenticator;
+
     @Override
     public void onCreate() {
-        super.onCreate();
+        mAuthenticator = new VertretungsplanAuthenticator(this);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mAuthenticator.getIBinder();
     }
 }

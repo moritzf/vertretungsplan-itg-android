@@ -11,6 +11,12 @@ import android.os.Bundle;
  * Created by Moritz on 5/18/2015.
  */
 public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
+
+    public final String LOG_TAG = VertretungsplanSyncAdapter.class.getSimpleName();
+
+    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
+
     public VertretungsplanSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }

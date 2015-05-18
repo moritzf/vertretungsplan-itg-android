@@ -11,4 +11,8 @@
     <string name="vertretungsplan_header">Vertretungen</string>
     <string name="general_info_header">Allg. Infos</string>
     <string name="absent_classes_header">Abwesende Klassen</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">vertretungsplan.itgdah.de</string>
+    <string name="content_authority">de.itgdah.vertretungsplan.app</string>
 </resources>

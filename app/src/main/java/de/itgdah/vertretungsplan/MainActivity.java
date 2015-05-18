@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
@@ -93,18 +94,7 @@ public class MainActivity extends Activity {
             Toolbar toolbar=(Toolbar) getActivity().findViewById(R.id.toolbar);
             toolbar.inflateMenu(R.menu.menu_main);
             toolbar.setTitle(getResources().getStringArray(R.array.drawer_titles)[0]);
-            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem menuItem) {
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_sync: {
-                            updateVertretungsplanList();
-                            break;
-                        }
-                    }
-                    return true;
-                }
-            });
+            toolbar.setTitleTextColor(Color.WHITE);
             getLoaderManager().initLoader(0, null,this);
         }
 

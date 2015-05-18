@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.itgdah.vertretungsplan" >
+    package="de.itgdah.vertretungsplan"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <!-- Required for fetchung vertretungsplan data. -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.authenticate_accounts"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name="de.itgdah.vertretungsplan.MainActivity"
             android:label="@string/app_name" >
@@ -16,10 +26,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:authorities="de.itgdah.vertretungsplan"
             android:name=".data.VertretungsplanProvider"
-            android:enabled="true"/>
+            android:exported="false"
+            android:syncable="true"
+            />
+
+        <service android:name=".sync.VertretungsplanSyncService"
+                 android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"
+                        android:resource="@xml/syncadapter" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".sync.VertretungsplanAuthenticatorService">
+           <intent-filter>
+               <action android:name="android.accounts.AccountAuthenticator" />
+           </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
     </application>
 
 </manifest>

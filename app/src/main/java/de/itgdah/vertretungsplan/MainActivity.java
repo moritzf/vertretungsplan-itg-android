@@ -82,8 +82,6 @@ public class MainActivity extends Activity {
 
         private static final String LOG_TAG = VertretungsplanFragment.class.getSimpleName();
         private SimpleCursorAdapter mVertretungsplanAdapter;
-        private SimpleCursorAdapter mGeneralInfoAdapter;
-        private SimpleCursorAdapter mAbsentClassesAdapter;
 
         public VertretungsplanFragment() {
         }
@@ -157,17 +155,6 @@ public class MainActivity extends Activity {
                     mVertretungsplanListItems, // view ids
                     0);
 
-            mGeneralInfoAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout
-                    .simple_list_item_1, getActivity().getContentResolver().query
-                    (VertretungsplanContract.GeneralInfo.CONTENT_URI, null, null, null, null),
-                    new String[] {VertretungsplanContract.GeneralInfo.COLUMN_MESSAGE,
-                            VertretungsplanContract.GeneralInfo._ID}, new
-                    int[]{R.id
-                    .general_info_listview_item}, 0);
-//            mAbsentClassesAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout
-//                    .simple_list_item_1, getActivity().getContentResolver().query
-//                    (VertretungsplanContract.AbsentClasses.CONTENT_URI, null, null, null, null),
-//                    null, null, 0);
             if(savedInstanceState == null) {
                 Log.v(LOG_TAG, "Execute FetchWeatherTask");
                 updateVertretungsplanList();
@@ -180,15 +167,9 @@ public class MainActivity extends Activity {
             View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
             ListView vertretungsplanView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
             vertretungsplanView.setAdapter(mVertretungsplanAdapter);
-            ListView generalInfoView = (ListView) rootView.findViewById(R.id.general_info_listview);
-            generalInfoView.setAdapter(mGeneralInfoAdapter);
-//            ListView absentClassesView = (ListView) rootView.findViewById(R.id
-//                    .absent_classes_listview);
-//            absentClassesView.setAdapter(mAbsentClassesAdapter);
             return rootView;
         }
 
-        // BUGGY
         public void updateVertretungsplanList() {
                 FetchVertretungsplanTask task = new FetchVertretungsplanTask(mContext);
                 task.execute();

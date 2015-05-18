@@ -198,7 +198,7 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
             ArrayList<String[]> vertretungsplan = vertretungsplanMap.get(dates[0]);
             ArrayList<String> generalInfo = parser.getGeneralInfo(doc).get(dates[1]);
             ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[0]);
-            Log.v("async", "connection established");
+            Log.v(LOG_TAG, "Connection established");
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
             if (dates != null) {
                 mContext.getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
@@ -216,22 +216,8 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
                     addVertretungsplanEntry(entry, dates[0]);
                 }
             }
-            if (generalInfo != null) {
-                mContext.getApplicationContext().getContentResolver().delete(GeneralInfo
-                     .CONTENT_URI, null, null);
-                for (String info : generalInfo) {
-                    addGeneralInfoEntry(info, dates[1]);
-                }
-            }
-            if (absentClasses != null) {
-                mContext.getApplicationContext().getContentResolver().delete(AbsentClasses
-                        .CONTENT_URI, null, null);
-                for (String absentClass: absentClasses) {
-                    addAbsentClassesEntry(absentClass, dates[0]);
-                }
-            }
         } catch (Exception e) {
-            Log.e("Error", "error");
+            Log.e(LOG_TAG, "Async task failed.");
         }
         return null;
     }
@@ -240,7 +226,6 @@ public class FetchVertretungsplanTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        Toast.makeText(mContext, "Executed", Toast.LENGTH_SHORT).show();
     }
 }
 

@@ -9,7 +9,7 @@
 
     <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.authenticate_accounts"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
 
     <application
         android:allowBackup="true"
@@ -37,9 +37,10 @@
         <service android:name=".sync.VertretungsplanSyncService"
                  android:exported="true">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"
-                        android:resource="@xml/syncadapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                       android:resource="@xml/syncadapter" />
         </service>
 
         <service android:name=".sync.VertretungsplanAuthenticatorService">

@@ -8,12 +8,14 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.jsoup.nodes.Document;
@@ -41,7 +43,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public final String LOG_TAG = VertretungsplanSyncAdapter.class.getSimpleName();
 
-    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_INTERVAL = 60 * 360;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
     public VertretungsplanSyncAdapter(Context context, boolean autoInitialize) {
@@ -61,21 +63,54 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
             ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[0]);
             Log.v(LOG_TAG, "Connection established");
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
-            if (dates != null) {
-                getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
-                        null, null);
-                for (String date : dates) {
-                    Date dateObj = dateFormat.parse(date, new ParsePosition(4));
-                    addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences
+                    (getContext());
+            String key = getContext().getString(R.string.date_stamp_key);
+            String savedDateStamp = preferences.getString(key,
+                    "");
+            String currentDateStamp = parser.getDateStamp();
+            if((savedDateStamp.equals("")) || (!currentDateStamp.equals(savedDateStamp))) {
+                preferences.edit().putString(key, currentDateStamp).apply();
+                if (dates.length > 0) {
+                    getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
+                            null, null);
+                    for (String date : dates) {
+                        Date dateObj = dateFormat.parse(date, new ParsePosition(4));
+                        addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
+                    }
                 }
 
-            }
-            if (vertretungsplan != null) {
-                getContext().getApplicationContext().getContentResolver().delete(Vertretungen
-                        .CONTENT_URI, null, null);
-                for (String[] entry : vertretungsplan) {
-                    addVertretungsplanEntry(entry, dates[0]);
+                if (vertretungsplan != null) {
+                    getContext().getApplicationContext().getContentResolver().delete(Vertretungen
+                            .CONTENT_URI, null, null);
+                    for(int i = 0; i < dates.length; i++) {
+                        for (String[] entry : vertretungsplan) {
+                            addVertretungsplanEntry(entry, dates[i]);
+                        }
+                    }
                 }
+
+                if (absentClasses != null) {
+                    getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
+                            .CONTENT_URI, null, null);
+                    for (int i = 0; i < dates.length; i++) {
+                        for (String entry : absentClasses) {
+                            addAbsentClassesEntry(entry, dates[i]);
+                        }
+                    }
+                }
+
+                if (generalInfo != null) {
+                    getContext().getApplicationContext().getContentResolver().delete(GeneralInfo
+                            .CONTENT_URI, null, null);
+                    for (int i = 0; i < dates.length; i++) {
+                        for (String entry : generalInfo) {
+                            addGeneralInfoEntry(entry, dates[i]);
+                        }
+                    }
+                }
+
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "OnPerformSync failed.");
@@ -239,7 +274,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
-                context.getString(R.string.content_authority), bundle);
+                VertretungsplanContract.CONTENT_AUTHORITY, bundle);
     }
 
     /**
@@ -287,16 +322,15 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);
-        String authority = context.getString(R.string.content_authority);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // we can enable inexact timers in our periodic sync
             SyncRequest request = new SyncRequest.Builder().
                     syncPeriodic(syncInterval, flexTime).
-                    setSyncAdapter(account, authority).build();
+                    setSyncAdapter(account, VertretungsplanContract.CONTENT_AUTHORITY).setExtras(new Bundle()).build();
             ContentResolver.requestSync(request);
         } else {
             ContentResolver.addPeriodicSync(account,
-                    authority, new Bundle(), syncInterval);
+                    VertretungsplanContract.CONTENT_AUTHORITY, new Bundle(), syncInterval);
         }
     }
 
@@ -309,7 +343,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         /*
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.
          */
-        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string
+               .content_authority), true);
 
         /*
          * Finally, let's do a sync to get things started

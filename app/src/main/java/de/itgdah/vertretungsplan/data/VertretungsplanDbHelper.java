@@ -61,7 +61,7 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
                 Vertretungen._ID + " INTEGER PRIMARY " +
                 "KEY AUTOINCREMENT," +
                 Vertretungen.COLUMN_DAYS_KEY + " INTEGER, " +
-                Vertretungen.COLUMN_PERIOD + " TEXT," +
+                Vertretungen.COLUMN_PERIOD + " INTEGER," +
                 Vertretungen.COLUMN_CLASS + " TEXT," +
                 Vertretungen.COLUMN_SUBJECT + " TEXT," +
                 Vertretungen.COLUMN_VERTRETEN_DURCH + " TEXT," +

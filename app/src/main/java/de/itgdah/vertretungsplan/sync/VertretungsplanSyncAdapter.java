@@ -61,6 +61,12 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
                 Document doc = parser.getDocumentViaLogin(VertretungsplanParser.URL_VERTRETUNGSPLAN);
                 DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
                 String[] dates = parser.getAvailableVertretungsplaeneDates(doc);
+                String[] normalizedDates = new String[dates.length];
+                for(int i = 0; i < dates.length; i++) {
+                   Date dateObj = dateFormat.parse(dates[i], new ParsePosition(4));
+                   normalizedDates[i] = VertretungsplanContract
+                           .convertDateToDatabaseFriendlyFormat(dateObj);
+                }
                 HashMap<String, ArrayList<String[]>> vertretungsplanMap = parser.getVertretungsplan(doc);
                 Log.v(LOG_TAG, "Connection established");
 
@@ -71,45 +77,45 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
                         "");
                 String currentDateStamp = parser.getDateStamp();
                 if ((savedDateStamp.equals("")) || (!currentDateStamp.equals(savedDateStamp))) {
+
                     preferences.edit().putString(key, currentDateStamp).apply();
                     if (dates.length > 0) {
                         getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
                                 null, null);
-                        for (String date : dates) {
-                            Date dateObj = dateFormat.parse(date, new ParsePosition(4));
-                            addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
+                        for (String date : normalizedDates) {
+                            addDate(date);
                         }
                     }
 
                     getContext().getApplicationContext().getContentResolver().delete(Vertretungen
                             .CONTENT_URI, null, null);
-                    for (int i = 0; i < dates.length; i++) {
+                    for (int i = 0; i < normalizedDates.length; i++) {
                         ArrayList<String[]> vertretungsplan = vertretungsplanMap.get(dates[i]);
                         if (vertretungsplan != null) {
                             for (String[] entry : vertretungsplan) {
-                                addVertretungsplanEntry(entry, dates[i]);
+                                addVertretungsplanEntry(entry, normalizedDates[i]);
                             }
                         }
                     }
 
                     getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
                             .CONTENT_URI, null, null);
-                    for (int i = 0; i < dates.length; i++) {
+                    for (int i = 0; i < normalizedDates.length; i++) {
                         ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[i]);
                         if (absentClasses != null) {
                             for (String entry : absentClasses) {
-                                addAbsentClassesEntry(entry, dates[i]);
+                                addAbsentClassesEntry(entry, normalizedDates[i]);
                             }
                         }
                     }
 
                     getContext().getApplicationContext().getContentResolver().delete(GeneralInfo
                             .CONTENT_URI, null, null);
-                    for (int i = 0; i < dates.length; i++) {
+                    for (int i = 0; i < normalizedDates.length; i++) {
                         ArrayList<String> generalInfo = parser.getGeneralInfo(doc).get(dates[i]);
                         if (generalInfo != null) {
                             for (String entry : generalInfo) {
-                                addGeneralInfoEntry(entry, dates[i]);
+                                addGeneralInfoEntry(entry, normalizedDates[i]);
                             }
                         }
                     }

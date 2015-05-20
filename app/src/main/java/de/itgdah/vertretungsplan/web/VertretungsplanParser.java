@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.itgdah.vertretungsplan.Utility;
+
 public class VertretungsplanParser implements LoginConstants {
 
     /** Constants */
@@ -31,6 +33,8 @@ public class VertretungsplanParser implements LoginConstants {
     public static final String URL_VERTRETUNGSPLAN =
             "http://www.itgdah.de/vp_app/VertretungsplanApp.html";
 
+    public static final int CONNECTION_TIMEOUT = 5000; // in milliseconds
+
     /**
      * Returns the document referenced by the url by performing a htaccess login.
      *
@@ -41,7 +45,7 @@ public class VertretungsplanParser implements LoginConstants {
      */
     public Document getDocumentViaLogin(String url) throws MalformedURLException {
         try {
-            return Jsoup.connect(url)
+            return Jsoup.connect(url).timeout(5000)
                     .header("Authorization", "Basic " + BASE_64_LOGIN).get();
         } catch (IOException e) {
             throw new MalformedURLException("The url doesn't exist");

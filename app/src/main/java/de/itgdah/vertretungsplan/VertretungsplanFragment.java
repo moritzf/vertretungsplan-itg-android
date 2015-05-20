@@ -7,15 +7,19 @@ import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
+import java.util.Date;
 
 import de.itgdah.vertretungsplan.MainActivity;
 import de.itgdah.vertretungsplan.R;
@@ -58,17 +62,17 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
         outState.putBoolean("running", true);
     }
 
+
     @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        mVertretungsplanAdapter.changeCursor(MainActivity.mContext.getContentResolver().query
-                (VertretungsplanContract.Vertretungen.CONTENT_URI, null, null, null,
-                        null));
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        updateVertretungsplan();
+        if(savedInstanceState == null) {
+            updateVertretungsplan();
+        }
         super.onCreate(savedInstanceState);
         String[] mVertretungsplanListColumns = {
                 VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
@@ -83,19 +87,10 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
                 R.id.textView5
         };
 
-        String mSelectionClause = null;
-        String[] mSelectionArgs = null;
-        Cursor mCursor = getActivity().getContentResolver().query(
-                VertretungsplanContract.Vertretungen.CONTENT_URI,
-                mVertretungsplanListColumns,
-                mSelectionClause,
-                mSelectionArgs,
-                null
-        );
         mVertretungsplanAdapter = new SimpleCursorAdapter(
                 getActivity(),
                 R.layout.main_fragment_vertretungsplan_listitem,
-                mCursor,
+                null,
                 mVertretungsplanListColumns, // column names
                 mVertretungsplanListItems, // view ids
                 0);
@@ -117,8 +112,11 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        ContentResolver resolver = getActivity().getContentResolver();
         return new CursorLoader(getActivity(), VertretungsplanContract.Vertretungen
-                .CONTENT_URI, null, null, null, VertretungsplanContract.Vertretungen
+                .CONTENT_URI, null,null ,
+               null,
+                VertretungsplanContract.Vertretungen
                 .COLUMN_PERIOD + " ASC");
     }
 

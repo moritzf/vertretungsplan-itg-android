@@ -12,6 +12,8 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,73 +54,82 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        String[] vertretungenArray = null;
-        VertretungsplanParser parser = new VertretungsplanParser();
-        try {
-            Document doc = parser.getDocumentViaLogin(VertretungsplanParser.URL_VERTRETUNGSPLAN);
-            String[] dates = parser.getAvailableVertretungsplaeneDates(doc);
-            HashMap<String, ArrayList<String[]>> vertretungsplanMap = parser.getVertretungsplan(doc);
-            ArrayList<String[]> vertretungsplan = vertretungsplanMap.get(dates[0]);
-            ArrayList<String> generalInfo = parser.getGeneralInfo(doc).get(dates[1]);
-            ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[0]);
-            Log.v(LOG_TAG, "Connection established");
-            DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
+        if(isOnline()) {
+            try {
+                String[] vertretungenArray = null;
+                VertretungsplanParser parser = new VertretungsplanParser();
+                Document doc = parser.getDocumentViaLogin(VertretungsplanParser.URL_VERTRETUNGSPLAN);
+                DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
+                String[] dates = parser.getAvailableVertretungsplaeneDates(doc);
+                HashMap<String, ArrayList<String[]>> vertretungsplanMap = parser.getVertretungsplan(doc);
+                Log.v(LOG_TAG, "Connection established");
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences
-                    (getContext());
-            String key = getContext().getString(R.string.date_stamp_key);
-            String savedDateStamp = preferences.getString(key,
-                    "");
-            String currentDateStamp = parser.getDateStamp();
-            if((savedDateStamp.equals("")) || (!currentDateStamp.equals(savedDateStamp))) {
-                preferences.edit().putString(key, currentDateStamp).apply();
-                if (dates.length > 0) {
-                    getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
-                            null, null);
-                    for (String date : dates) {
-                        Date dateObj = dateFormat.parse(date, new ParsePosition(4));
-                        addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
-                    }
-                }
-
-                if (vertretungsplan != null) {
-                    getContext().getApplicationContext().getContentResolver().delete(Vertretungen
-                            .CONTENT_URI, null, null);
-                    for(int i = 0; i < dates.length; i++) {
-                        for (String[] entry : vertretungsplan) {
-                            addVertretungsplanEntry(entry, dates[i]);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences
+                        (getContext());
+                String key = getContext().getString(R.string.date_stamp_key);
+                String savedDateStamp = preferences.getString(key,
+                        "");
+                String currentDateStamp = parser.getDateStamp();
+                if ((savedDateStamp.equals("")) || (!currentDateStamp.equals(savedDateStamp))) {
+                    preferences.edit().putString(key, currentDateStamp).apply();
+                    if (dates.length > 0) {
+                        getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
+                                null, null);
+                        for (String date : dates) {
+                            Date dateObj = dateFormat.parse(date, new ParsePosition(4));
+                            addDate(VertretungsplanContract.convertDateToDatabaseFriendlyFormat(dateObj));
                         }
                     }
-                }
 
-                if (absentClasses != null) {
+                    getContext().getApplicationContext().getContentResolver().delete(Vertretungen
+                            .CONTENT_URI, null, null);
+                    for (int i = 0; i < dates.length; i++) {
+                        ArrayList<String[]> vertretungsplan = vertretungsplanMap.get(dates[i]);
+                        if (vertretungsplan != null) {
+                            for (String[] entry : vertretungsplan) {
+                                addVertretungsplanEntry(entry, dates[i]);
+                            }
+                        }
+                    }
+
                     getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
                             .CONTENT_URI, null, null);
                     for (int i = 0; i < dates.length; i++) {
-                        for (String entry : absentClasses) {
-                            addAbsentClassesEntry(entry, dates[i]);
+                        ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[i]);
+                        if (absentClasses != null) {
+                            for (String entry : absentClasses) {
+                                addAbsentClassesEntry(entry, dates[i]);
+                            }
                         }
                     }
-                }
 
-                if (generalInfo != null) {
                     getContext().getApplicationContext().getContentResolver().delete(GeneralInfo
                             .CONTENT_URI, null, null);
                     for (int i = 0; i < dates.length; i++) {
-                        for (String entry : generalInfo) {
-                            addGeneralInfoEntry(entry, dates[i]);
+                        ArrayList<String> generalInfo = parser.getGeneralInfo(doc).get(dates[i]);
+                        if (generalInfo != null) {
+                            for (String entry : generalInfo) {
+                                addGeneralInfoEntry(entry, dates[i]);
+                            }
                         }
                     }
-                }
 
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "OnPerformSync failed.");
             }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "OnPerformSync failed.");
+        } else {
+            Log.e(LOG_TAG, "Not online.");
         }
         return;
     }
 
-
+       private boolean isOnline() {
+            ConnectivityManager cm =
+            (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
     /**
      * Inserts a new date into the days database table.
      *
@@ -131,9 +142,11 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
                         Days.COLUMN_DATE + " = ?", new String[]{date},
                         null);
         if (cursor.moveToFirst()) {
-            int dateIdIndex = cursor.getColumnIndex(Days._ID);
-            return cursor.getLong(dateIdIndex);
+            long dateIdIndex = cursor.getLong(cursor.getColumnIndex(Days._ID));
+            cursor.close();
+            return dateIdIndex;
         } else {
+            cursor.close();
             ContentValues dayValue = new ContentValues();
             dayValue.put(Days.COLUMN_DATE, date);
 
@@ -174,9 +187,11 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         Cursor cursor = getContext().getContentResolver().query(Vertretungen.CONTENT_URI, new
                 String[]{Vertretungen._ID}, addEntrySelection, addEntrySelectionArgs, null);
         if (cursor.moveToFirst()) {
-            int entryIdIndex = cursor.getColumnIndex(Vertretungen._ID);
-            return cursor.getLong(entryIdIndex);
+            long entryIdIndex = cursor.getLong(cursor.getColumnIndex(Vertretungen._ID));
+            cursor.close();
+            return entryIdIndex;
         } else {
+            cursor.close();
             ContentValues entryValues = new ContentValues();
             entryValues.put(Vertretungen.COLUMN_DAYS_KEY, dateId);
             entryValues.put(Vertretungen.COLUMN_PERIOD, entry[0]);
@@ -212,9 +227,11 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         Cursor cursor = getContext().getContentResolver().query(GeneralInfo.CONTENT_URI, new
                 String[]{GeneralInfo._ID}, addEntrySelection, addEntrySelectionArgs, null);
         if (cursor.moveToFirst()) {
-            int entryIdIndex = cursor.getColumnIndex(GeneralInfo._ID);
-            return cursor.getLong(entryIdIndex);
+            long entryIdIndex = cursor.getLong(cursor.getColumnIndex(GeneralInfo._ID));
+            cursor.close();
+            return entryIdIndex;
         } else {
+            cursor.close();
             ContentValues entryValues = new ContentValues();
             entryValues.put(GeneralInfo.COLUMN_MESSAGE, generalInfo);
             Uri generalInfoInsertUri = getContext().getContentResolver().insert(GeneralInfo
@@ -243,9 +260,11 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         Cursor cursor = getContext().getContentResolver().query(AbsentClasses.CONTENT_URI, new
                 String[]{AbsentClasses._ID}, addEntrySelection, addEntrySelectionArgs, null);
         if (cursor.moveToFirst()) {
-            int entryIdIndex = cursor.getColumnIndex(AbsentClasses._ID);
-            return cursor.getLong(entryIdIndex);
+            long entryIdIndex = cursor.getLong(cursor.getColumnIndex(AbsentClasses._ID));
+            cursor.close();
+            return entryIdIndex;
         } else {
+            cursor.close();
             ContentValues entryValues = new ContentValues();
             entryValues.put(AbsentClasses.COLUMN_MESSAGE, absentClass);
             Uri absentClassesInsertUri = getContext().getContentResolver().insert(AbsentClasses

@@ -57,7 +57,6 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         if(isOnline()) {
             try {
-                String[] vertretungenArray = null;
                 VertretungsplanParser parser = new VertretungsplanParser();
                 Document doc = parser.getDocumentViaLogin(VertretungsplanParser.URL_VERTRETUNGSPLAN);
                 DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
@@ -80,12 +79,11 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
                 if ((savedDateStamp.equals("")) || (!currentDateStamp.equals(savedDateStamp))) {
 
                     preferences.edit().putString(key, currentDateStamp).apply();
-                    if (dates.length > 0) {
-                        getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
-                                null, null);
-                        for (String date : normalizedDates) {
-                            addDate(date);
-                        }
+
+                    getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
+                            null, null);
+                    for (String date : normalizedDates) {
+                        addDate(date);
                     }
 
                     getContext().getApplicationContext().getContentResolver().delete(Vertretungen

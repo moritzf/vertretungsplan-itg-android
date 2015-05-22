@@ -11,7 +11,6 @@ import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import java.util.Date;
-
-import de.itgdah.vertretungsplan.MainActivity;
-import de.itgdah.vertretungsplan.R;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
-import de.itgdah.vertretungsplan.web.FetchVertretungsplanTask;
 
 /**
  * A placeholder fragment containing a simple view.

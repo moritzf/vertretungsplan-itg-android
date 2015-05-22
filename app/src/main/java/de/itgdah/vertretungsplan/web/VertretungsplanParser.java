@@ -9,8 +9,13 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +28,8 @@ public class VertretungsplanParser implements LoginConstants {
     /** Used in the login method. */
     private static final String LOGIN = USERNAME + ":" + PASSWORD;
     private static final String BASE_64_LOGIN = new String(Base64.encodeToString(LOGIN.getBytes(),Base64.DEFAULT));
+    private String[] dateArray= new String[3];
+    private boolean isDateArraySet = false;
 
     /**
      * Url of the server directory containing the date stamp of the
@@ -78,6 +85,9 @@ public class VertretungsplanParser implements LoginConstants {
      * 13/03/15 comes before 14/03/15.
      */
     public String[] getAvailableVertretungsplaeneDates(Document doc) {
+        if(isDateArraySet) {
+            return dateArray;
+        }
         // All h2 headings contain a Vertretungsplan date string.
         Elements dates = doc.select("h2");
         // date format 20.3.2015
@@ -85,9 +95,12 @@ public class VertretungsplanParser implements LoginConstants {
         Matcher matcher = pattern.matcher(dates.text());
         String[] dateArray = new String[3];
         int countDateArray = 0;
+        DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMAN);
         while (matcher.find()) {
-            dateArray[countDateArray++] = matcher.group();
+            Date dateObj = dateFormat.parse(matcher.group(), new ParsePosition(4));
+            dateArray[countDateArray++] = Utility.convertDateToDatabaseFriendlyFormat(dateObj);
         }
+        this.dateArray = dateArray;
         return dateArray;
     }
 

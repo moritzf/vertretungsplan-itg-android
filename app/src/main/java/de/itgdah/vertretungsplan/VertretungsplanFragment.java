@@ -107,9 +107,12 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         ContentResolver resolver = getActivity().getContentResolver();
-        Log.v(LOG_TAG, DatabaseUtils.dumpCursorToString(resolver.query(VertretungsplanContract
-                .Days.CONTENT_URI, null, null, null, null)));
-        String[] selectionArgs = new String[] {"1"};
+        Cursor c = getActivity().getContentResolver().query(VertretungsplanContract.Days
+                .CONTENT_URI, new String[] {"MIN(" + VertretungsplanContract.Days._ID + ")"}, null
+                , null , null);
+        if(c.moveToFirst()) {}
+        String[] selectionArgs = new String[] {c.getString(0)}; // index of column date
+        c.close();
         return new CursorLoader(getActivity(), VertretungsplanContract.Vertretungen
                 .CONTENT_URI, null, VertretungsplanContract.Vertretungen.COLUMN_DAYS_KEY + " = ?" ,
                selectionArgs,

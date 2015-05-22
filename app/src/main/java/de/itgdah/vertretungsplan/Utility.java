@@ -1,6 +1,7 @@
 package de.itgdah.vertretungsplan;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,4 +25,29 @@ public final class Utility {
         return dayFormatter.format(date);
     }
 
+    /**
+     * Converts the given date object to a database-friendly representation.
+     * @param date the date to be converted
+     *             preconditions: format: DateFormat.MEDIUM, Locale.GERMAN
+     * @return date converted to the database format specified in {@link VertretungsplanContract}
+     */
+    public static String convertDateToDatabaseFriendlyFormat(Date date) {
+        DateFormat dbFormatter = new SimpleDateFormat(VertretungsplanContract.DATE_FORMAT, Locale.GERMAN);
+        return dbFormatter.format(date);
+    }
+
+    /**
+     * Converts a dateText to a long Unix time representation
+     * @param dateText the input date string
+     * @return the Date object
+     */
+    public static Date getDateFromDb(String dateText) {
+        SimpleDateFormat dbDateFormat = new SimpleDateFormat(VertretungsplanContract.DATE_FORMAT, Locale.GERMAN);
+        try {
+            return dbDateFormat.parse(dateText);
+        } catch ( ParseException e ) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

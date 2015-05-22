@@ -35,32 +35,6 @@ public class VertretungsplanContract {
     // back into date objects for comparison/processing.
     public static final String DATE_FORMAT = "yyyyMMdd";
 
-    /**
-     * Converts the given date object to a database-friendly representation.
-     * @param date the date to be converted
-     *             preconditions: format: DateFormat.MEDIUM, Locale.GERMAN
-     * @return date converted to the database format specified in {@link VertretungsplanContract}
-     */
-    public static String convertDateToDatabaseFriendlyFormat(Date date) {
-        DateFormat dbFormatter = new SimpleDateFormat(VertretungsplanContract.DATE_FORMAT, Locale.GERMAN);
-        return dbFormatter.format(date);
-    }
-
-    /**
-     * Converts a dateText to a long Unix time representation
-     * @param dateText the input date string
-     * @return the Date object
-     */
-    public static Date getDateFromDb(String dateText) {
-        SimpleDateFormat dbDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
-        try {
-            return dbDateFormat.parse(dateText);
-        } catch ( ParseException e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     /* Inner class that defines the table contents of the Vertretungen
     table. */
     public static final class Vertretungen implements BaseColumns {

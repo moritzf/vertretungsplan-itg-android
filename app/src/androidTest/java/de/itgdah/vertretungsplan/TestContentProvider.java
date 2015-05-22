@@ -40,19 +40,7 @@ public class TestContentProvider extends ApplicationTestCase<Application> {
     public void testContentProviderDates() {
         Cursor c = mContext.getContentResolver().query(VertretungsplanContract.Days
                .CONTENT_URI, null, null, null, null);
-        Log.v(LOG_TAG, DatabaseUtils.dumpCursorToString(c));
        assertEquals(3, c.getCount());
-        ArrayList<Integer> dateIds = new ArrayList<>();
-        while (c.moveToNext()) {
-           dateIds.add(c.getInt(0)); // id column
-        }
-        int[] output = new int[dateIds.size()];
-        for(int i = 0; i < output.length; i++) {
-           output[i] = dateIds.get(i);
-        }
-
-        assertArrayEquals(new int[] {1,2,3}, output);
-
     }
 
     public void testContentProviderVertretungen() {

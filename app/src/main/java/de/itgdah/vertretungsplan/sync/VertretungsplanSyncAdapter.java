@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
@@ -22,18 +23,11 @@ import android.util.Log;
 
 import org.jsoup.nodes.Document;
 
-import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Vector;
 
 import de.itgdah.vertretungsplan.R;
-import de.itgdah.vertretungsplan.Utility;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
@@ -53,6 +47,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     // Used to save battery.
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
+    public static final String SYNC_FINISHED = "finished";
+
     public VertretungsplanSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
@@ -60,6 +56,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         updateDatabase();
+        Intent i = new Intent(SYNC_FINISHED);
+        getContext().sendBroadcast(i);
     }
 
     private void updateDatabase() {
@@ -70,37 +68,15 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 Document doc = parser.getDocumentViaLogin(VertretungsplanParser
                         .URL_VERTRETUNGSPLAN);
+
                 String[] dates = parser.getAvailableVertretungsplaeneDates(doc);
-                // delete table
-                getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
-                        null, null);
-                for (String date : dates) {
-                    addDate(date);
-                }
 
+                addDates(dates);
                 addVertretungsplanEntries(parser.getVertretungsplan(doc), dates);
+                addGeneralInfoEntries(parser.getGeneralInfo(doc), dates);
+                addAbsentClassesEntries(parser.getAbsentClasses(doc), dates);
 
-                getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
-                        .CONTENT_URI, null, null);
-                for (int i = 0; i < dates.length; i++) {
-                    ArrayList<String> absentClasses = parser.getAbsentClasses(doc).get(dates[i]);
-                    if (absentClasses != null) {
-                        for (String entry : absentClasses) {
-                            addAbsentClassesEntry(entry, dates[i]);
-                        }
-                    }
-                }
 
-                getContext().getApplicationContext().getContentResolver().delete(GeneralInfo
-                        .CONTENT_URI, null, null);
-                for (int i = 0; i < dates.length; i++) {
-                    ArrayList<String> generalInfo = parser.getGeneralInfo(doc).get(dates[i]);
-                    if (generalInfo != null) {
-                        for (String entry : generalInfo) {
-                            addGeneralInfoEntry(entry, dates[i]);
-                        }
-                    }
-                }
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error retrieving vertretungsplan from server.");
             }
@@ -141,6 +117,14 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 return ContentUris.parseId(dateInsertUri);
             }
+    }
+
+    private void addDates(String[] dates) {
+        getContext().getApplicationContext().getContentResolver().delete(Days.CONTENT_URI,
+                null, null);
+        for (String date : dates) {
+            addDate(date);
+        }
     }
 
     /**
@@ -198,6 +182,20 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
             return ContentUris.parseId(generalInfoInsertUri);
     }
 
+    private void addGeneralInfoEntries(HashMap<String, ArrayList<String>> generalInfoEntries,
+                                       String[] dates) {
+        getContext().getApplicationContext().getContentResolver().delete(GeneralInfo
+                .CONTENT_URI, null, null);
+        for (int i = 0; i < dates.length; i++) {
+            ArrayList<String> generalInfo = generalInfoEntries.get(dates[i]);
+            if (generalInfo != null) {
+                for (String entry : generalInfo) {
+                    addGeneralInfoEntry(entry, dates[i]);
+                }
+            }
+        }
+    }
+
     /**
      * Adds a general info line to the database.
      *
@@ -212,6 +210,20 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
             Uri absentClassesInsertUri = getContext().getContentResolver().insert(AbsentClasses
                     .CONTENT_URI, entryValues);
             return ContentUris.parseId(absentClassesInsertUri);
+    }
+
+    private void addAbsentClassesEntries(HashMap<String, ArrayList<String>> absentClassesEntries,
+                                         String[] dates) {
+        getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
+                .CONTENT_URI, null, null);
+        for (int i = 0; i < dates.length; i++) {
+            ArrayList<String> absentClasses = absentClassesEntries.get(dates[i]);
+            if (absentClasses != null) {
+                for (String entry : absentClasses) {
+                    addAbsentClassesEntry(entry, dates[i]);
+                }
+            }
+        }
     }
 
     /**

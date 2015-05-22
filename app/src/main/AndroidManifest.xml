@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
 
     <application
@@ -31,7 +32,7 @@
         <provider
             android:authorities="de.itgdah.vertretungsplan"
             android:name=".data.VertretungsplanProvider"
-            android:exported="false"
+            android:exported="true"
             android:syncable="true"
             />
 

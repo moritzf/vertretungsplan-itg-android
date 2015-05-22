@@ -3,11 +3,15 @@ package de.itgdah.vertretungsplan;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +33,17 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
 
     private static final String LOG_TAG = VertretungsplanFragment.class.getSimpleName();
     private SimpleCursorAdapter mVertretungsplanAdapter;
+
+    // required for syncFinishedReceiver
+    VertretungsplanFragment handle = this;
+    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "SYNC!");
+            getLoaderManager().restartLoader(0, null, handle);
+        }
+    };
+
 
     public VertretungsplanFragment() {
     }
@@ -96,6 +111,19 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(syncFinishedReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter
+                (VertretungsplanSyncAdapter.SYNC_FINISHED));
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
@@ -106,20 +134,30 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        ContentResolver resolver = getActivity().getContentResolver();
         Cursor c = getActivity().getContentResolver().query(VertretungsplanContract.Days
                 .CONTENT_URI, new String[] {"MIN(" + VertretungsplanContract.Days._ID + ")"}, null
                 , null , null);
         if(c.moveToFirst()) {}
-        String[] selectionArgs = new String[] {c.getString(0)}; // index of column date
+        String dayId = c.getString(0);
+        String[] selectionArgs;
+        String selection;
+        if (dayId != null) {
+            selectionArgs = new String[] {c.getString(0)}; // index of column date
+            selection = VertretungsplanContract.Vertretungen.COLUMN_DAYS_KEY + " = ?";
+        } else {
+            selectionArgs = null;
+            selection = null;
+        }
         c.close();
         return new CursorLoader(getActivity(), VertretungsplanContract.Vertretungen
-                .CONTENT_URI, null, VertretungsplanContract.Vertretungen.COLUMN_DAYS_KEY + " = ?" ,
-               selectionArgs,
-                VertretungsplanContract.Vertretungen
+                .CONTENT_URI, null, selection,selectionArgs, VertretungsplanContract.Vertretungen
                 .COLUMN_PERIOD + " ASC");
     }
 
+    /**
+     * @param loader
+     * @param data
+     */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mVertretungsplanAdapter.swapCursor(data);

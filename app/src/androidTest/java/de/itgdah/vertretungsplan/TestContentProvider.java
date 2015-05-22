@@ -2,17 +2,7 @@ package de.itgdah.vertretungsplan;
 
 import android.app.Application;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.provider.ContactsContract;
 import android.test.ApplicationTestCase;
-import android.util.Log;
-
-import junit.framework.TestResult;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import static org.junit.Assert.*;
 
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 
@@ -40,6 +30,7 @@ public class TestContentProvider extends ApplicationTestCase<Application> {
     public void testContentProviderDates() {
         Cursor c = mContext.getContentResolver().query(VertretungsplanContract.Days
                .CONTENT_URI, null, null, null, null);
+        c.close();
        assertEquals(3, c.getCount());
     }
 

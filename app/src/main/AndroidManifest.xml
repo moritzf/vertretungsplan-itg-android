@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.itgdah.vertretungsplan"
-    android:versionCode="1"
-    android:versionName="1.0">
+    package="de.itgdah.vertretungsplan">
 
     <!-- Required for fetchung vertretungsplan data. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -32,7 +30,7 @@
         <provider
             android:authorities="de.itgdah.vertretungsplan"
             android:name=".data.VertretungsplanProvider"
-            android:exported="true"
+            android:exported="false"
             android:syncable="true"
             />
 
@@ -42,7 +40,7 @@
                 <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
             <meta-data android:name="android.content.SyncAdapter"
-                       android:resource="@xml/syncadapter" />
+                       android:resource="@xml/sync_adapter" />
         </service>
 
         <service android:name=".sync.VertretungsplanAuthenticatorService">

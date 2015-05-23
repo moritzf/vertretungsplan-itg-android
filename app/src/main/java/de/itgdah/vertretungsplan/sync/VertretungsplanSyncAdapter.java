@@ -36,16 +36,17 @@ import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
 import de.itgdah.vertretungsplan.web.VertretungsplanParser;
 
 /**
- * Created by Moritz on 5/18/2015.
+ * Used for syncing the vertretungsplan on the school server with the one on the device. Also
+ * handles notifications.
  */
 public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
-    public final String LOG_TAG = VertretungsplanSyncAdapter.class.getSimpleName();
+    private final String LOG_TAG = VertretungsplanSyncAdapter.class.getSimpleName();
 
     // Interval at which to sync with the server.
-    public static final int SYNC_INTERVAL = 60 * 360;
+    private static final int SYNC_INTERVAL = 60 * 360;
     // Used to save battery.
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
+    private static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
     public static final String SYNC_FINISHED = "finished";
 
@@ -85,7 +86,6 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Checks if internet access is available.
-     * @return
      */
     private boolean isOnline() {
             ConnectivityManager cm =
@@ -132,8 +132,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      * dates of the entries, e.g. 20151105, are already present in the database.
      * @return number of rows added
      */
-    private int addVertretungsplanEntries(HashMap<String, ArrayList<String[]>> vertretungsplanMap,
-            String[] dates) {
+    private void addVertretungsplanEntries(HashMap<String, ArrayList<String[]>> vertretungsplanMap,
+                                           String[] dates) {
         getContext().getApplicationContext().getContentResolver().delete(Vertretungen
                 .CONTENT_URI, null, null);
         Vector<ContentValues> cvVector = new Vector<>();
@@ -147,9 +147,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         ContentValues[] cvArray = new ContentValues[cvVector.size()];
         cvVector.toArray(cvArray);
-        int vertretungenBulkInsertUri = getContext().getContentResolver().bulkInsert(Vertretungen
+        getContext().getContentResolver().bulkInsert(Vertretungen
                 .CONTENT_URI, cvArray);
-        return vertretungenBulkInsertUri;
     }
 
     private ContentValues getVertretungsplanContentValues(String[] entry, String date) {
@@ -171,26 +170,24 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      *
      * @param generalInfo String containing one line of the general information.
      * @param date        the date associated with the general info.
-     * @return the row id of the added entry
      */
-    private long addGeneralInfoEntry(String generalInfo, String date) {
-        long dateId = getDateId(date);
+    private void addGeneralInfoEntry(String generalInfo, String date) {
             ContentValues entryValues = new ContentValues();
             entryValues.put(GeneralInfo.COLUMN_MESSAGE, generalInfo);
             Uri generalInfoInsertUri = getContext().getContentResolver().insert(GeneralInfo
                     .CONTENT_URI, entryValues);
-            return ContentUris.parseId(generalInfoInsertUri);
+            ContentUris.parseId(generalInfoInsertUri);
     }
 
     private void addGeneralInfoEntries(HashMap<String, ArrayList<String>> generalInfoEntries,
                                        String[] dates) {
         getContext().getApplicationContext().getContentResolver().delete(GeneralInfo
                 .CONTENT_URI, null, null);
-        for (int i = 0; i < dates.length; i++) {
-            ArrayList<String> generalInfo = generalInfoEntries.get(dates[i]);
+        for (String date : dates) {
+            ArrayList<String> generalInfo = generalInfoEntries.get(date);
             if (generalInfo != null) {
                 for (String entry : generalInfo) {
-                    addGeneralInfoEntry(entry, dates[i]);
+                    addGeneralInfoEntry(entry, date);
                 }
             }
         }
@@ -201,26 +198,24 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      *
      * @param absentClass String containing one absent class.
      * @param date        the date associated with the general info.
-     * @return the row id of the added entry
      */
-    private long addAbsentClassesEntry(String absentClass, String date) {
-        long dateId = getDateId(date);
+    private void addAbsentClassesEntry(String absentClass, String date) {
             ContentValues entryValues = new ContentValues();
             entryValues.put(AbsentClasses.COLUMN_MESSAGE, absentClass);
             Uri absentClassesInsertUri = getContext().getContentResolver().insert(AbsentClasses
                     .CONTENT_URI, entryValues);
-            return ContentUris.parseId(absentClassesInsertUri);
+            ContentUris.parseId(absentClassesInsertUri);
     }
 
     private void addAbsentClassesEntries(HashMap<String, ArrayList<String>> absentClassesEntries,
                                          String[] dates) {
         getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
                 .CONTENT_URI, null, null);
-        for (int i = 0; i < dates.length; i++) {
-            ArrayList<String> absentClasses = absentClassesEntries.get(dates[i]);
+        for (String date : dates) {
+            ArrayList<String> absentClasses = absentClassesEntries.get(date);
             if (absentClasses != null) {
                 for (String entry : absentClasses) {
-                    addAbsentClassesEntry(entry, dates[i]);
+                    addAbsentClassesEntry(entry, date);
                 }
             }
         }
@@ -257,7 +252,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      * @return a fake account.
      */
-    public static Account getSyncAccount(Context context) {
+    private static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
         AccountManager accountManager =
                 (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
@@ -292,17 +287,17 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     /**
      * Helper method to schedule the sync adapter periodic execution
      */
-    public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+    private static void configurePeriodicSync(Context context) {
         Account account = getSyncAccount(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // we can enable inexact timers in our periodic sync
             SyncRequest request = new SyncRequest.Builder().
-                    syncPeriodic(syncInterval, flexTime).
+                    syncPeriodic(VertretungsplanSyncAdapter.SYNC_INTERVAL, VertretungsplanSyncAdapter.SYNC_FLEXTIME).
                     setSyncAdapter(account, VertretungsplanContract.CONTENT_AUTHORITY).setExtras(new Bundle()).build();
             ContentResolver.requestSync(request);
         } else {
             ContentResolver.addPeriodicSync(account,
-                    VertretungsplanContract.CONTENT_AUTHORITY, new Bundle(), syncInterval);
+                    VertretungsplanContract.CONTENT_AUTHORITY, new Bundle(), VertretungsplanSyncAdapter.SYNC_INTERVAL);
         }
     }
 
@@ -310,7 +305,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
         /*
          * Since we've created an account
          */
-        VertretungsplanSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+        VertretungsplanSyncAdapter.configurePeriodicSync(context);
 
         /*
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.
@@ -334,7 +329,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      * @return true if the date stamp on the device and the one on the server don't match. false
      * otherwise.
      */
-    public boolean hasVertretungsplanChanged(String dateStampOnServer) {
+    private boolean hasVertretungsplanChanged(String dateStampOnServer) {
         // retrieve date stamp on device
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String dateStampKey = getContext().getString(R.string.date_stamp_key);

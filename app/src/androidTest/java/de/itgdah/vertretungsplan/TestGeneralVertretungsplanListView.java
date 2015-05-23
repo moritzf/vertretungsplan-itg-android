@@ -5,11 +5,10 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.widget.ListView;
 
 /**
- * Created by Moritz on 5/22/2015.
+ * Tests the list view of the general vertretungsplan
  */
 public class TestGeneralVertretungsplanListView extends ActivityInstrumentationTestCase2<MainActivity> {
 
-    private MainActivity mMainActivity;
     private Fragment mVertretungsplanFragment;
     private ListView mListView;
 
@@ -20,7 +19,6 @@ public class TestGeneralVertretungsplanListView extends ActivityInstrumentationT
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mMainActivity = getActivity();
         mVertretungsplanFragment = getActivity().getFragmentManager().findFragmentById(R.id
                 .main_contentframe);
 
@@ -29,7 +27,7 @@ public class TestGeneralVertretungsplanListView extends ActivityInstrumentationT
     public void testListView() {
         mListView = (ListView) mVertretungsplanFragment.getView().findViewById(R.id
                 .vertretungsplan_listview);
-        if(mListView.getCount() == 0) {
+        if(mListView == null  || mListView.getCount() == 0) {
             fail("List view contains no items.");
         }
     }

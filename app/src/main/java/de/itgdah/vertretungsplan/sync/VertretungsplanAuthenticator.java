@@ -11,7 +11,7 @@ import android.os.Bundle;
  * This code is copied directly, in its entirety, from
  * http://developer.android.com/training/sync-adapters/creating-authenticator.html
  */
-public class VertretungsplanAuthenticator extends AbstractAccountAuthenticator {
+class VertretungsplanAuthenticator extends AbstractAccountAuthenticator {
 
     public VertretungsplanAuthenticator(Context context) {
         super(context);

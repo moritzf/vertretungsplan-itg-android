@@ -6,7 +6,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 /**
- * Created by Moritz on 5/18/2015.
+ * Stub sync service.
  */
 public class VertretungsplanSyncService extends Service {
 

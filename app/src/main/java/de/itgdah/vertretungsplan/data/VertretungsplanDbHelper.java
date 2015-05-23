@@ -13,13 +13,13 @@ import de.itgdah.vertretungsplan.data.VertretungsplanContract.PersonalData;
 /**
  * Manages a local database for the Vertretungsplan.
  */
-public class VertretungsplanDbHelper extends SQLiteOpenHelper {
+class VertretungsplanDbHelper extends SQLiteOpenHelper {
 
     /* Denotes the database version. Increment this value,
      if the database schema changes */
     private static final int DATABASE_VERSION = 1;
 
-    public static final String DATABASE_NAME = "vertretungsplan.db";
+    private static final String DATABASE_NAME = "vertretungsplan.db";
 
     public VertretungsplanDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -13,7 +13,7 @@ public class VertretungsplanContract {
     public static final String CONTENT_AUTHORITY = "de.itgdah.vertretungsplan";
 
     // Base of all URI's which are used to interact with the content provider.
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Paths that are appended to the BASE_CONTENT_URI to provide access to
     // the individual tables

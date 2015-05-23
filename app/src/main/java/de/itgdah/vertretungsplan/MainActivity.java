@@ -6,7 +6,6 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,15 +13,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 
 
 public class MainActivity extends Activity {
 
-    public String[] mTitles;
+    private String[] mTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    public static Context mContext;
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,20 +45,6 @@ public class MainActivity extends Activity {
         }
         mContext = getApplicationContext();
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        // Toolbar is used instead.
-        return false;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Toolbar is used instead.
-        return false;
     }
 
     private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {

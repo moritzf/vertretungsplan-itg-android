@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 /**
- * Created by Moritz on 5/18/2015.
+ * Stub authenticator service used for sync service.
  */
 public class VertretungsplanAuthenticatorService extends Service {
 

@@ -33,8 +33,8 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
     private SimpleCursorAdapter mVertretungsplanAdapter;
 
     // required for syncFinishedReceiver
-    VertretungsplanFragment handle = this;
-    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+    private final VertretungsplanFragment handle = this;
+    private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "SYNC!");
@@ -70,11 +70,6 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
         outState.putBoolean("running", true);
     }
 
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -2,7 +2,6 @@ package de.itgdah.vertretungsplan;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -10,7 +9,7 @@ import java.util.Locale;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 
 /**
- * Created by Moritz on 5/5/2015.
+ * Defines utility functions like date conversion functions.
  */
 public final class Utility {
 

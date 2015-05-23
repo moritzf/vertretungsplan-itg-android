@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.test.ApplicationTestCase;
 
-import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.PersonalData;
@@ -19,16 +18,6 @@ public class TestContentProvider extends ApplicationTestCase<Application> {
 
     public TestContentProvider() {
         super(Application.class);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testDates() {
@@ -47,6 +36,7 @@ public class TestContentProvider extends ApplicationTestCase<Application> {
     }
 
     public void testPersonalData() {
+        mContext.getContentResolver().delete(PersonalData.CONTENT_URI, null, null);
         ContentValues cv = new ContentValues();
         cv.put(PersonalData.COLUMN_SUBJECT, "1sk4");
         cv.put(PersonalData.COLUMN_CLASS, "11");

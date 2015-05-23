@@ -1,5 +1,6 @@
 package de.itgdah.vertretungsplan.web;
 
+import android.content.ContentResolver;
 import android.util.Base64;
 
 import org.jsoup.Jsoup;
@@ -27,7 +28,7 @@ public class VertretungsplanParser implements LoginConstants {
 
     /** Used in the login method. */
     private static final String LOGIN = USERNAME + ":" + PASSWORD;
-    private static final String BASE_64_LOGIN = new String(Base64.encodeToString(LOGIN.getBytes(),Base64.DEFAULT));
+    private static final String BASE_64_LOGIN = Base64.encodeToString(LOGIN.getBytes(), Base64.DEFAULT);
     private String[] dateArray= new String[3];
     private boolean isDateArraySet = false;
 
@@ -35,7 +36,7 @@ public class VertretungsplanParser implements LoginConstants {
      * Url of the server directory containing the date stamp of the
      * Vertretungsplan.
      */
-    public static final String URL_VERTRETUNGSPLAN_DIRECTORY =
+    private static final String URL_VERTRETUNGSPLAN_DIRECTORY =
             "http://www.itgdah.de/vp_app/";
     public static final String URL_VERTRETUNGSPLAN =
             "http://www.itgdah.de/vp_app/VertretungsplanApp.html";
@@ -52,14 +53,15 @@ public class VertretungsplanParser implements LoginConstants {
      */
     public Document getDocumentViaLogin(String url) throws MalformedURLException {
         try {
-            return Jsoup.connect(url).timeout(5000)
+            return Jsoup.connect(url).timeout(CONNECTION_TIMEOUT)
                     .header("Authorization", "Basic " + BASE_64_LOGIN).get();
         } catch (IOException e) {
             throw new MalformedURLException("The url doesn't exist");
         }
     }
 
-    /** Gets the date stamp of the Vertretungsplan. */
+    /** Gets the date stamp of the Vertretungsplan. If the date stamp can't be retrieved "" is
+     * returned.*/
     public String getDateStamp() {
         Document doc = null;
         try {
@@ -68,6 +70,9 @@ public class VertretungsplanParser implements LoginConstants {
             e.printStackTrace();
         }
         // Select row that contains the date string.
+        if(doc == null) {
+            return "";
+        }
         String data = doc.select("pre").text();
         // Date string format: 2015-03-20 11:37
         // Get date string via regular expression matching.
@@ -101,6 +106,7 @@ public class VertretungsplanParser implements LoginConstants {
             dateArray[countDateArray++] = Utility.convertDateToDatabaseFriendlyFormat(dateObj);
         }
         this.dateArray = dateArray;
+        isDateArraySet = true;
         return dateArray;
     }
 
@@ -111,7 +117,7 @@ public class VertretungsplanParser implements LoginConstants {
     public HashMap<String, ArrayList<String>> getAbsentClasses(Document doc) {
         String[] dateArray = getAvailableVertretungsplaeneDates(doc);
         HashMap<String, ArrayList<String>> map =
-                new HashMap<String, ArrayList<String>>();
+                new HashMap<>();
 
         // all absent classes tables are of class K
         Elements absentClasses = doc.select("table.K");
@@ -135,7 +141,7 @@ public class VertretungsplanParser implements LoginConstants {
     public HashMap<String, ArrayList<String>> getGeneralInfo(Document doc) {
         String[] dateArray = getAvailableVertretungsplaeneDates(doc);
         HashMap<String, ArrayList<String>> map =
-                new HashMap<String, ArrayList<String>>();
+                new HashMap<>();
 
         // all general info tables are of class F
         Elements generalInfo = doc.select("table.F");
@@ -180,7 +186,7 @@ public class VertretungsplanParser implements LoginConstants {
 
         String[] dateArray = getAvailableVertretungsplaeneDates(doc);
         HashMap<String, ArrayList<String[]>> map =
-                new HashMap<String, ArrayList<String[]>>();
+                new HashMap<>();
 
 	/*
 	 * All Vertretungsplan tables are preceded by an h4 heading and are of class

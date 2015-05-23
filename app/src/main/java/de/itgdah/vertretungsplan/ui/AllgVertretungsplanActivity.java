@@ -24,7 +24,7 @@ public class AllgVertretungsplanActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.allg_vertretungsplan_activity);
 
         mTitles = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity);
@@ -38,7 +38,7 @@ public class AllgVertretungsplanActivity extends Activity {
 
         if(savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.main_contentframe, new VertretungsplanFragment())
+                    .replace(R.id.main_contentframe, new AllgVertretungsplanFragment())
                     .commit();
         }
 
@@ -54,7 +54,7 @@ public class AllgVertretungsplanActivity extends Activity {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new VertretungsplanFragment();
+        Fragment fragment = new AllgVertretungsplanFragment();
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()

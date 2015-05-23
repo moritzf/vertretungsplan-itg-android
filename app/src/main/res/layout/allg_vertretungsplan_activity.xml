@@ -8,11 +8,25 @@
              style="@style/AppTheme"
     >
 
-    <FrameLayout
-        android:id="@+id/main_contentframe"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/AppTheme.ActionBar"
+        android:title="@string/menu_bar_title"
         android:layout_width="match_parent"
-        android:layout_height="483dp" />
+        android:layout_height="wrap_content"/>
 
+    <de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:background="@color/colorPrimary"
+        />
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vertretungsplan_days_pager"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
 
     <ListView android:id="@+id/main_drawer"
         android:layout_width="240dp"
@@ -21,6 +35,6 @@
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="#ffffffff"/>
+        android:background="@android:color/white"/>
 
 </android.support.v4.widget.DrawerLayout>

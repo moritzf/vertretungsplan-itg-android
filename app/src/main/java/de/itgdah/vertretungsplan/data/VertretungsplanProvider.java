@@ -13,9 +13,10 @@ import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.PersonalData;
 
 /**
- * Created by moritz on 23.03.15.
+ * Content provider of the vertretungplan app.
  */
 public class VertretungsplanProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -27,6 +28,7 @@ public class VertretungsplanProvider extends ContentProvider {
     private static final int DAYS = 200;
     private static final int GENERAL_INFO = 300;
     private static final int ABSENT_CLASSES = 400;
+    private static final int PERSONAL_DATA = 500;
 
     private static final SQLiteQueryBuilder sVertretungenByDateQueryBuilder;
 
@@ -72,6 +74,7 @@ public class VertretungsplanProvider extends ContentProvider {
         matcher.addURI(authority, VertretungsplanContract.PATH_VERTRETUNGEN + "/#", VERTRETUNGEN_WITH_DATE);
         matcher.addURI(authority, VertretungsplanContract.PATH_VERTRETUNGEN, VERTRETUNGEN);
         matcher.addURI(authority, VertretungsplanContract.PATH_VERTRETUNGEN + "/#/#", VERTRETUNGEN_WITH_DATE_AND_ID);
+        matcher.addURI(authority, VertretungsplanContract.PATH_PERSONAL_DATA, PERSONAL_DATA);
         return matcher;
     }
 
@@ -117,6 +120,11 @@ public class VertretungsplanProvider extends ContentProvider {
                         projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             }
+            case PERSONAL_DATA: {
+                returnCursor = mDbHelper.getReadableDatabase().query(PersonalData.TABLE_NAME,
+                        projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -142,6 +150,8 @@ public class VertretungsplanProvider extends ContentProvider {
                 return Days.CONTENT_TYPE;
             case ABSENT_CLASSES:
                 return VertretungsplanContract.AbsentClasses.CONTENT_TYPE;
+            case PERSONAL_DATA:
+                return PersonalData.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -170,7 +180,7 @@ public class VertretungsplanProvider extends ContentProvider {
                 if (_id > 0) {
                     returnUri = Days.buildDaysUri(_id);
                 } else {
-                    throw new SQLException("Failed to insert row into" + uri);
+                    throw new SQLException("Failed to insert row into " + uri);
                 }
                 break;
             }
@@ -179,7 +189,7 @@ public class VertretungsplanProvider extends ContentProvider {
                 if (_id > 0) {
                     returnUri = VertretungsplanContract.AbsentClasses.buildAbsentClassesUri(_id);
                 } else {
-                    throw new SQLException("Failed to insert row into" + uri);
+                    throw new SQLException("Failed to insert row into " + uri);
                 }
                 break;
             }
@@ -190,7 +200,16 @@ public class VertretungsplanProvider extends ContentProvider {
                     returnUri = VertretungsplanContract.GeneralInfo
                             .buildGeneralInfoUri(_id);
                 } else {
-                    throw new SQLException("Failed to insert row into" + uri);
+                    throw new SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            case PERSONAL_DATA: {
+                long _id = db.insert(PersonalData.TABLE_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = PersonalData.buildPersonalDataUri(_id);
+                } else {
+                    throw new SQLException("Failed to insert row into " + uri);
                 }
                 break;
             }
@@ -223,6 +242,9 @@ public class VertretungsplanProvider extends ContentProvider {
             case GENERAL_INFO:
                 rowsDeleted = db.delete(GeneralInfo.TABLE_NAME, selection,
                         selectionArgs);
+                break;
+            case PERSONAL_DATA:
+                rowsDeleted = db.delete(PersonalData.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -257,6 +279,9 @@ public class VertretungsplanProvider extends ContentProvider {
             case GENERAL_INFO:
                 rowsUpdated = db.update(GeneralInfo.TABLE_NAME, values, selection,
                         selectionArgs);
+                break;
+            case PERSONAL_DATA:
+                rowsUpdated = db.update(PersonalData.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " +

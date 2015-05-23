@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Std."
-        android:id="@+id/textView"
+        android:id="@+id/text_view_period"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -18,10 +18,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Klasse"
-        android:id="@+id/textView2"
+        android:id="@+id/text_view_class"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/textView"
-        android:layout_toEndOf="@+id/textView"
+        android:layout_toRightOf="@+id/text_view_period"
+        android:layout_toEndOf="@+id/text_view_period"
         android:layout_marginLeft="8dp" />
 
     <TextView
@@ -29,10 +29,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Fach"
-        android:id="@+id/textView3"
+        android:id="@+id/text_view_subject"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
+        android:layout_toRightOf="@+id/text_view_class"
+        android:layout_toEndOf="@+id/text_view_class"
         android:layout_marginLeft="8dp" />
 
     <TextView
@@ -40,10 +40,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Kommentar"
-        android:id="@+id/textView5"
+        android:id="@+id/text_view_comment"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@+id/textView3"/>
+        android:layout_toRightOf="@+id/text_view_subject"/>
 </RelativeLayout>

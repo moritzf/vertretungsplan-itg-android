@@ -4,14 +4,8 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 /**
- * Created by moritz on 23.03.15.
+ * Contract that describes the interface of the content provider.
  */
 public class VertretungsplanContract {
 
@@ -193,6 +187,10 @@ public class VertretungsplanContract {
 
         // The subject that the user wants to have displayed in the personal vertretungsplan.
         public static final String COLUMN_SUBJECT = "subject";
+
+        public static Uri buildPersonalDataUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
 
     }
 }

@@ -77,7 +77,7 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_PERSONAL_DATA_TABLE = "CREATE TABLE " +
                 PersonalData.TABLE_NAME + " (" +
                 PersonalData._ID + " INTEGER PRIMARY " + "KEY AUTOINCREMENT," +
-                PersonalData.COLUMN_CLASS + " TEXT" +
+                PersonalData.COLUMN_CLASS + " TEXT," +
                 PersonalData.COLUMN_SUBJECT + " TEXT" + " )";
 
 
@@ -86,6 +86,7 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_ABSENT_CLASSES_TABLE);
         db.execSQL(SQL_CREATE_GENERAL_INFO_TABLE);
         db.execSQL(SQL_CREATE_VERTRETUNGEN_TABLE);
+        db.execSQL(SQL_CREATE_PERSONAL_DATA_TABLE);
     }
 
     @Override
@@ -97,6 +98,7 @@ public class VertretungsplanDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + AbsentClasses.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + GeneralInfo.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Vertretungen.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PersonalData.TABLE_NAME);
         onCreate(db);
     }
 }

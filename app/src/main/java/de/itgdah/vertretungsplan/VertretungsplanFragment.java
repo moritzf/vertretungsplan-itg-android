@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -51,6 +49,7 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
         VertretungsplanSyncAdapter.initializeSyncAdapter(activity);
     }
 
@@ -92,8 +91,8 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
         };
 
         int[] mVertretungsplanListItems = {
-                R.id.textView, R.id.textView2, R.id.textView3,
-                R.id.textView5
+                R.id.text_view_period, R.id.text_view_class, R.id.text_view_subject,
+                R.id.text_view_comment
         };
 
         mVertretungsplanAdapter = new SimpleCursorAdapter(
@@ -154,10 +153,6 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
                 .COLUMN_PERIOD + " ASC");
     }
 
-    /**
-     * @param loader
-     * @param data
-     */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mVertretungsplanAdapter.swapCursor(data);

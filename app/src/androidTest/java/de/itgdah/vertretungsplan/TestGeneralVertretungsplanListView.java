@@ -21,16 +21,7 @@ public class TestGeneralVertretungsplanListView extends ActivityInstrumentationT
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mVertretungsplanFragment = getActivity().getFragmentManager().findFragmentById(R.id
-                .main_contentframe);
 
     }
 
-    public void testListView() {
-        mListView = (ListView) mVertretungsplanFragment.getView().findViewById(R.id
-                .vertretungsplan_listview);
-        if(mListView == null  || mListView.getCount() == 0) {
-            fail("List view contains no items.");
-        }
-    }
 }

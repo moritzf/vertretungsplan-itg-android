@@ -1,40 +1,45 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout android:id="@+id/main_activity"
+             style="@style/AppTheme"
+             xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
-             android:id="@+id/main_activity"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".MainActivity"
-             tools:ignore="MergeRootFrame"
-             style="@style/AppTheme"
-    >
+             tools:context="ui.AllgVertretungsplanActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/AppTheme.ActionBar"
-        android:title="@string/menu_bar_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:background="@color/colorPrimary"
+        android:title="@string/menu_bar_title"/>
+
+    <de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout
+        android:id="@+id/sliding_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
         />
 
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vertretungsplan_days_pager"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
     <ListView android:id="@+id/main_drawer"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="@android:color/white"/>
-
+              android:layout_width="240dp"
+              android:layout_height="match_parent"
+              android:layout_gravity="start"
+              android:background="@android:color/white"
+              android:choiceMode="singleChoice"
+              android:divider="@android:color/transparent"
+              android:dividerHeight="0dp"/>
 </android.support.v4.widget.DrawerLayout>

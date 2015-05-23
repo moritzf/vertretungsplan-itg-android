@@ -1,24 +1,79 @@
 package de.itgdah.vertretungsplan.ui;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.Loader;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.itgdah.vertretungsplan.R;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract;
+import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
+import de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout;
 
 
-public class AllgVertretungsplanActivity extends Activity {
+public class AllgVertretungsplanActivity extends AppCompatActivity implements
+        LoaderManager
+        .LoaderCallbacks<Cursor> {
 
-    // Drawer related
+
+    private static final String LOG_TAG = AllgVertretungsplanActivity.class
+            .getSimpleName();
+
+    // required for syncFinishedReceiver
+    private final AllgVertretungsplanActivity handle = this;
+    private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getLoaderManager().restartLoader(0, null, handle);
+        }
+    };
+
+    // drawer related
     private String[] mTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+
+
+    private SimpleCursorAdapter mVertretungsplanAdapter;
+
+    // tabs related
+    ViewPager mVertretungsplanDaysPager;
+    SlidingTabLayout mSlidingTabLayout;
+    List<DaysPagerItem> mVertrungsplanDaysTabs = new ArrayList<>();
+
+    @Override
+    protected void onResume() {
+        super.onPostResume();
+        registerReceiver(syncFinishedReceiver, new IntentFilter
+                (VertretungsplanSyncAdapter.SYNC_FINISHED));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(syncFinishedReceiver);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +92,60 @@ public class AllgVertretungsplanActivity extends Activity {
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         if(savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.main_contentframe, new AllgVertretungsplanFragment())
-                    .commit();
+            VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
 
+        String[] mVertretungsplanListColumns = {
+                VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
+                VertretungsplanContract.Vertretungen.COLUMN_CLASS,
+                VertretungsplanContract.Vertretungen.COLUMN_SUBJECT,
+                VertretungsplanContract.Vertretungen.COLUMN_COMMENT,
+                VertretungsplanContract.Vertretungen._ID
+        };
+
+        int[] mVertretungsplanListItems = {
+                R.id.text_view_period, R.id.text_view_class, R.id.text_view_subject,
+                R.id.text_view_comment
+        };
+
+        mVertretungsplanAdapter = new SimpleCursorAdapter(
+                this,
+                R.layout.vertretungen_listitem,
+                null,
+                mVertretungsplanListColumns, // column names
+                mVertretungsplanListItems, // view ids
+                0);
+
+        mVertrungsplanDaysTabs.add(new DaysPagerItem("test1", Color.BLUE));
+        mVertrungsplanDaysTabs.add(new DaysPagerItem("test2", Color.BLUE));
+        mVertrungsplanDaysTabs.add(new DaysPagerItem("test3", Color.BLUE));
+
+        Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setTitle(getResources().getStringArray(R.array.drawer_titles)[0]);
+        toolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(toolbar);
+
+        mVertretungsplanDaysPager = (ViewPager) findViewById(R.id
+                .vertretungsplan_days_pager);
+        mVertretungsplanDaysPager.setAdapter(new
+                VertretungsplanDaysPagerAdapter(getFragmentManager()));
+
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setDistributeEvenly(true);
+        mSlidingTabLayout.setViewPager(mVertretungsplanDaysPager);
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    /** Swaps fragments in the main content view */
+    private void selectItem(int position) {
+        // Create a new fragment and specify the planet to show based on position
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+
+        mDrawerLayout.closeDrawer(mDrawerList);
     }
 
     private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
@@ -51,19 +155,35 @@ public class AllgVertretungsplanActivity extends Activity {
         }
     }
 
-    /** Swaps fragments in the main content view */
-    private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new AllgVertretungsplanFragment();
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.main_contentframe, fragment)
-                .commit();
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Cursor c = getContentResolver().query(VertretungsplanContract.Days
+                .CONTENT_URI, new String[] {"MIN(" + VertretungsplanContract.Days._ID + ")"}, null
+                , null , null);
+        if(c.moveToFirst()) {}
+        String dayId = c.getString(0);
+        String[] selectionArgs;
+        String selection;
+        if (dayId != null) {
+            selectionArgs = new String[] {c.getString(0)}; // index of column date
+            selection = VertretungsplanContract.Vertretungen.COLUMN_DAYS_KEY + " = ?";
+        } else {
+            selectionArgs = null;
+            selection = null;
+        }
+        c.close();
+        return new CursorLoader(this, VertretungsplanContract.Vertretungen
+                .CONTENT_URI, null, selection,selectionArgs, VertretungsplanContract.Vertretungen
+                .COLUMN_PERIOD + " ASC");
+    }
 
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mVertretungsplanAdapter.swapCursor(data);
+    }
 
-        mDrawerLayout.closeDrawer(mDrawerList);
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mVertretungsplanAdapter.swapCursor(null);
     }
 }

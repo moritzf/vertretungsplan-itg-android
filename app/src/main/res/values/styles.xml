@@ -1,11 +1,10 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary" type="color">@color/primary</item>
         <item name="colorPrimaryDark" type="color">@color/primaryDark</item>
         <item name="colorAccent" type="color">@color/accent</item>
-
     </style>
 
     <style name="AppTheme.ActionBar"
@@ -15,7 +14,6 @@
         <!-- Not working. Temporarily set to WHITE in the fragment(s)  -->
         <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
         <item name="android:background">@color/primary</item>
-        <item name="android:layout_marginBottom">8dp</item>
     </style>
 
     <style name="AppTheme.ActionBar.Title" parent="Base.Theme.AppCompat.Light.DarkActionBar">

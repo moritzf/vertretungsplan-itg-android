@@ -58,7 +58,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         updateDatabase();
         Intent i = new Intent(SYNC_FINISHED);
-        getContext().sendBroadcast(i);
+        getContext().sendBroadcast(i); // notify listeners that sync was performed.
     }
 
     private void updateDatabase() {

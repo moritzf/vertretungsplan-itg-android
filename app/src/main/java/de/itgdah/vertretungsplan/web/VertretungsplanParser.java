@@ -1,6 +1,5 @@
 package de.itgdah.vertretungsplan.web;
 
-import android.content.ContentResolver;
 import android.util.Base64;
 
 import org.jsoup.Jsoup;
@@ -20,7 +19,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.itgdah.vertretungsplan.Utility;
+import de.itgdah.vertretungsplan.util.Utility;
 
 public class VertretungsplanParser implements LoginConstants {
 

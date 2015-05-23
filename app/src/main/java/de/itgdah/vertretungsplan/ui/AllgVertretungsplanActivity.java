@@ -1,26 +1,24 @@
-package de.itgdah.vertretungsplan;
+package de.itgdah.vertretungsplan.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import de.itgdah.vertretungsplan.R;
 
 
-public class MainActivity extends Activity {
+public class AllgVertretungsplanActivity extends Activity {
 
+    // Drawer related
     private String[] mTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,6 @@ public class MainActivity extends Activity {
                     .replace(R.id.main_contentframe, new VertretungsplanFragment())
                     .commit();
         }
-        mContext = getApplicationContext();
 
     }
 

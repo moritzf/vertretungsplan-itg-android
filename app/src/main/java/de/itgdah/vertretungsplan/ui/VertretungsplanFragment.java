@@ -1,4 +1,4 @@
-package de.itgdah.vertretungsplan;
+package de.itgdah.vertretungsplan.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import de.itgdah.vertretungsplan.R;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:id="@android:id/text1"
+          style="@style/days_tab"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="wrap_content"
+          android:background="?android:selectableItemBackground"
+          android:paddingLeft="16dp"
+          android:paddingRight="16dp"
+          android:layout_height="48dp"
+          android:gravity="center"
+          android:textColor="@color/days_tab_color"
+          android:textSize="12sp"
+          android:textStyle="bold"
+          android:textAllCaps="true"
+    />
+

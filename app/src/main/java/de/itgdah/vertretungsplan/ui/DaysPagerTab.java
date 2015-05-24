@@ -1,31 +1,25 @@
 package de.itgdah.vertretungsplan.ui;
 
-import android.app.Fragment;
-
 /**
  * Represents a tab displayed by {@link android.support.v4.view.ViewPager}.
  */
-public class DaysPagerItem {
+public class DaysPagerTab {
     private final CharSequence mTitle;
-    private final int mIndicatorColor;
 
-    public DaysPagerItem(CharSequence title, int indicatorColor) {
+    public DaysPagerTab(CharSequence title) {
         mTitle = title;
-        mIndicatorColor = indicatorColor;
     }
 
     /**
      * Returns a new {@link android.support.v4.app.ListFragment} to be
      * displayed by the {@link android.support.v4.view.ViewPager}
      */
-    DayVertretungsplanListFragment createFragment() { return DayVertretungsplanListFragment
-            .newInstance(); };
+    DayListFragment createFragment() { return new
+            DayListFragment(); };
 
     /**
      * @return the title which represents this tab.
      */
     CharSequence getTitle() { return mTitle; }
-
-    int getmIndicatorColor() { return mIndicatorColor; }
 
 }

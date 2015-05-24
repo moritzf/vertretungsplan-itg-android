@@ -1,5 +1,7 @@
 package de.itgdah.vertretungsplan.ui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,12 +12,12 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,6 +46,10 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.v(LOG_TAG, "Sync performed.");
+            mDaysTabs.set(2, new DaysPagerTab("Date"));
+            mDaysPagerAdapter.notifyDataSetChanged();
+            mSlidingTabLayout.setViewPager(mDaysPager);
             getLoaderManager().restartLoader(0, null, handle);
         }
     };
@@ -54,12 +60,14 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
     private ListView mDrawerList;
 
 
-    private SimpleCursorAdapter mVertretungsplanAdapter;
+    public SimpleCursorAdapter mVertretungsplanAdapter;
 
     // tabs related
-    ViewPager mVertretungsplanDaysPager;
+    public ViewPager mDaysPager;
     SlidingTabLayout mSlidingTabLayout;
-    List<DaysPagerItem> mVertrungsplanDaysTabs = new ArrayList<>();
+    List<DaysPagerTab> mDaysTabs = new ArrayList<>();
+    public int NUM_DAYS_IN_PAGER = 3;
+    public DaysPagerAdapter mDaysPagerAdapter;
 
     @Override
     protected void onResume() {
@@ -94,6 +102,7 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
         if(savedInstanceState == null) {
             VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
+        VertretungsplanSyncAdapter.syncImmediately(this);
 
         String[] mVertretungsplanListColumns = {
                 VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
@@ -116,24 +125,28 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
                 mVertretungsplanListItems, // view ids
                 0);
 
-        mVertrungsplanDaysTabs.add(new DaysPagerItem("test1", Color.BLUE));
-        mVertrungsplanDaysTabs.add(new DaysPagerItem("test2", Color.BLUE));
-        mVertrungsplanDaysTabs.add(new DaysPagerItem("test3", Color.BLUE));
-
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setTitle(getResources().getStringArray(R.array.drawer_titles)[0]);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
-        mVertretungsplanDaysPager = (ViewPager) findViewById(R.id
+        mDaysTabs.add(new DaysPagerTab("test1"));
+        mDaysTabs.add(new DaysPagerTab("test2"));
+        mDaysTabs.add(new DaysPagerTab("test3"));
+
+        mDaysPager = (ViewPager) findViewById(R.id
                 .vertretungsplan_days_pager);
-        mVertretungsplanDaysPager.setAdapter(new
-                VertretungsplanDaysPagerAdapter(getFragmentManager()));
+        mDaysPagerAdapter = new
+                DaysPagerAdapter(getFragmentManager());
+        mDaysPager.setAdapter(mDaysPagerAdapter);
 
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setCustomTabView(R.layout.days_tab, android.R.id
+                .text1);
         mSlidingTabLayout.setDistributeEvenly(true);
-        mSlidingTabLayout.setViewPager(mVertretungsplanDaysPager);
+        mSlidingTabLayout.setSelectedIndicatorColors(Color.WHITE);
+        mSlidingTabLayout.setViewPager(mDaysPager);
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -186,4 +199,35 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         mVertretungsplanAdapter.swapCursor(null);
     }
+
+    /**
+     * Created by moritz on 23.05.15.
+     */
+    public class DaysPagerAdapter extends FragmentPagerAdapter {
+
+
+        public DaysPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_DAYS_IN_PAGER;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mDaysTabs.get(position).getTitle();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Bundle bundle = new Bundle();
+            bundle.putInt("pos", position);
+            Fragment dayListFragment = new DayListFragment();
+            dayListFragment.setArguments(bundle);
+            return dayListFragment;
+        }
+    }
+
 }

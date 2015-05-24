@@ -20,8 +20,11 @@ public final class Utility {
      * @return a two-character day of the week string
      */
     public static String getDayOfTheWeekFromDate(Date date) {
-        SimpleDateFormat dayFormatter = new SimpleDateFormat("EE", Locale.GERMAN);
-        return dayFormatter.format(date);
+        SimpleDateFormat dayFormatter = new SimpleDateFormat("E, dd.MM",
+                Locale.GERMAN);
+        String result = dayFormatter.format(date);
+        return result.substring(0, 2) + result.substring(3); // necessary to
+        // avoid dot (.) in day abbreviation, e.g. FR, instead of FR.
     }
 
     /**

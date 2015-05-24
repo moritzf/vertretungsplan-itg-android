@@ -28,29 +28,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.itgdah.vertretungsplan.R;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 import de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout;
+import de.itgdah.vertretungsplan.util.Utility;
 
 
-public class AllgVertretungsplanActivity extends AppCompatActivity implements
-        LoaderManager
-        .LoaderCallbacks<Cursor> {
+public class AllgVertretungsplanActivity extends AppCompatActivity  {
 
 
     private static final String LOG_TAG = AllgVertretungsplanActivity.class
             .getSimpleName();
 
     // required for syncFinishedReceiver
-    private final AllgVertretungsplanActivity handle = this;
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(LOG_TAG, "Sync performed.");
-            mDaysTabs.set(2, new DaysPagerTab("Date"));
+            Cursor c = getContentResolver().query(Days.CONTENT_URI, new
+                    String[] {Days.COLUMN_DATE}, null, null, Days._ID + " ASC");
+            for (int i = 0; i < NUM_DAYS_IN_PAGER; i++) {
+                c.moveToPosition(i);
+               mDaysTabs.set(i, new DaysPagerTab(Utility
+                       .getDayOfTheWeekFromDate(Utility.getDateFromDb(c
+                               .getString(0)))));
+            }
+            c.close();
             mDaysPagerAdapter.notifyDataSetChanged();
             mSlidingTabLayout.setViewPager(mDaysPager);
-            getLoaderManager().restartLoader(0, null, handle);
         }
     };
 
@@ -59,8 +65,6 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
-
-    public SimpleCursorAdapter mVertretungsplanAdapter;
 
     // tabs related
     public ViewPager mDaysPager;
@@ -88,7 +92,7 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.allg_vertretungsplan_activity);
-
+        VertretungsplanSyncAdapter.syncImmediately(this);
         mTitles = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity);
         mDrawerList = (ListView) findViewById(R.id.main_drawer);
@@ -102,28 +106,6 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
         if(savedInstanceState == null) {
             VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
-        VertretungsplanSyncAdapter.syncImmediately(this);
-
-        String[] mVertretungsplanListColumns = {
-                VertretungsplanContract.Vertretungen.COLUMN_PERIOD,
-                VertretungsplanContract.Vertretungen.COLUMN_CLASS,
-                VertretungsplanContract.Vertretungen.COLUMN_SUBJECT,
-                VertretungsplanContract.Vertretungen.COLUMN_COMMENT,
-                VertretungsplanContract.Vertretungen._ID
-        };
-
-        int[] mVertretungsplanListItems = {
-                R.id.text_view_period, R.id.text_view_class, R.id.text_view_subject,
-                R.id.text_view_comment
-        };
-
-        mVertretungsplanAdapter = new SimpleCursorAdapter(
-                this,
-                R.layout.vertretungen_listitem,
-                null,
-                mVertretungsplanListColumns, // column names
-                mVertretungsplanListItems, // view ids
-                0);
 
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_main);
@@ -131,9 +113,9 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
-        mDaysTabs.add(new DaysPagerTab("test1"));
-        mDaysTabs.add(new DaysPagerTab("test2"));
-        mDaysTabs.add(new DaysPagerTab("test3"));
+        mDaysTabs.add(new DaysPagerTab(""));
+        mDaysTabs.add(new DaysPagerTab(""));
+        mDaysTabs.add(new DaysPagerTab(""));
 
         mDaysPager = (ViewPager) findViewById(R.id
                 .vertretungsplan_days_pager);
@@ -148,7 +130,6 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
         mSlidingTabLayout.setSelectedIndicatorColors(Color.WHITE);
         mSlidingTabLayout.setViewPager(mDaysPager);
 
-        getLoaderManager().initLoader(0, null, this);
     }
 
     /** Swaps fragments in the main content view */
@@ -168,37 +149,6 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Cursor c = getContentResolver().query(VertretungsplanContract.Days
-                .CONTENT_URI, new String[] {"MIN(" + VertretungsplanContract.Days._ID + ")"}, null
-                , null , null);
-        if(c.moveToFirst()) {}
-        String dayId = c.getString(0);
-        String[] selectionArgs;
-        String selection;
-        if (dayId != null) {
-            selectionArgs = new String[] {c.getString(0)}; // index of column date
-            selection = VertretungsplanContract.Vertretungen.COLUMN_DAYS_KEY + " = ?";
-        } else {
-            selectionArgs = null;
-            selection = null;
-        }
-        c.close();
-        return new CursorLoader(this, VertretungsplanContract.Vertretungen
-                .CONTENT_URI, null, selection,selectionArgs, VertretungsplanContract.Vertretungen
-                .COLUMN_PERIOD + " ASC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mVertretungsplanAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mVertretungsplanAdapter.swapCursor(null);
-    }
 
     /**
      * Created by moritz on 23.05.15.
@@ -222,9 +172,9 @@ public class AllgVertretungsplanActivity extends AppCompatActivity implements
 
         @Override
         public Fragment getItem(int position) {
+            Fragment dayListFragment = new DayListFragment();
             Bundle bundle = new Bundle();
             bundle.putInt("pos", position);
-            Fragment dayListFragment = new DayListFragment();
             dayListFragment.setArguments(bundle);
             return dayListFragment;
         }

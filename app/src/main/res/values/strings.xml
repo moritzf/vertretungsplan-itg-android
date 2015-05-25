@@ -5,16 +5,14 @@
     </array>
 
     <string name="app_name">Vertretungsplan ITG</string>
-    <string name="menu_bar_title">Allg. Vertretungsplan</string>
-    <string name="table_top">Std.   Kl.   Fach   Kommentar</string>
     <string name="vertretungsplan_header">Vertretungen</string>
-    <string name="general_info_header">Allg. Infos</string>
     <string name="absent_classes_header">Abwesende Klassen</string>
 
     <!-- SyncAdapter related -->
     <string name="sync_account_type">vertretungsplan.itgdah.de</string>
     <string name="content_authority">de.itgdah.vertretungsplan</string>
     <string name="date_stamp_key">vertretungsplan_last_updated</string>
+
     <string name="refresh">Aktualisieren</string>
     <string name="general_info_table_header">Allg. Infos</string>
 </resources>

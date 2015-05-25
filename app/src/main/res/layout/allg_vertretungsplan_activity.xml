@@ -14,7 +14,6 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:title="@string/menu_bar_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Toolbar"
@@ -36,11 +35,12 @@
     </LinearLayout>
 
     <ListView android:id="@+id/main_drawer"
-              android:layout_width="240dp"
+              android:layout_width="280dp"
               android:layout_height="match_parent"
               android:layout_gravity="start"
               android:background="@android:color/white"
               android:choiceMode="singleChoice"
               android:divider="@android:color/transparent"
               android:dividerHeight="0dp"/>
+
 </android.support.v4.widget.DrawerLayout>

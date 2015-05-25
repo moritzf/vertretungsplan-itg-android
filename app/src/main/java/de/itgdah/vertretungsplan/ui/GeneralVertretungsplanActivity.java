@@ -32,11 +32,13 @@ import de.itgdah.vertretungsplan.ui.widget.DaysPagerTab;
 import de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout;
 import de.itgdah.vertretungsplan.util.Utility;
 
+/**
+ * Represents the general vertretungsplan view of the app.
+ */
+public class GeneralVertretungsplanActivity extends AppCompatActivity  {
 
-public class AllgVertretungsplanActivity extends AppCompatActivity  {
 
-
-    private static final String LOG_TAG = AllgVertretungsplanActivity.class
+    private static final String LOG_TAG = GeneralVertretungsplanActivity.class
             .getSimpleName();
 
     // required for syncFinishedReceiver
@@ -156,7 +158,7 @@ public class AllgVertretungsplanActivity extends AppCompatActivity  {
 
 
     /**
-     * Created by moritz on 23.05.15.
+     * Adapter for the Days Pager.
      */
     public class DaysPagerAdapter extends FragmentPagerAdapter {
 
@@ -192,6 +194,5 @@ public class AllgVertretungsplanActivity extends AppCompatActivity  {
             return true;
         }
         return false;
-
     }
 }

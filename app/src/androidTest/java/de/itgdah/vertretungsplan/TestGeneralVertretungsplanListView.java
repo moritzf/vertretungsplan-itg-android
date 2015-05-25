@@ -4,18 +4,18 @@ import android.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.ListView;
 
-import de.itgdah.vertretungsplan.ui.AllgVertretungsplanActivity;
+import de.itgdah.vertretungsplan.ui.GeneralVertretungsplanActivity;
 
 /**
  * Tests the list view of the general vertretungsplan
  */
-public class TestGeneralVertretungsplanListView extends ActivityInstrumentationTestCase2<AllgVertretungsplanActivity> {
+public class TestGeneralVertretungsplanListView extends ActivityInstrumentationTestCase2<GeneralVertretungsplanActivity> {
 
     private Fragment mVertretungsplanFragment;
     private ListView mListView;
 
     public TestGeneralVertretungsplanListView() {
-        super(AllgVertretungsplanActivity.class);
+        super(GeneralVertretungsplanActivity.class);
     }
 
     @Override

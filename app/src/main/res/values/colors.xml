@@ -3,4 +3,5 @@
     <item name="primary" type="color">#FF0066ff</item>
     <item name="primaryDark" type="color">#FF0051cc</item>
     <item name="accent" type="color">#FFFFFFFF</item>
+    <item name="headerTitle" type="color">#8C000000</item>
 </resources>

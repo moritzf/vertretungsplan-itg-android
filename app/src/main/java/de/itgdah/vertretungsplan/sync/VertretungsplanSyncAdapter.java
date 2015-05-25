@@ -64,7 +64,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     private void updateDatabase() {
 
         VertretungsplanParser parser = new VertretungsplanParser();
-        if (isOnline() && hasVertretungsplanChanged(parser.getDateStamp())) {
+        if (isOnline() ) { //&& hasVertretungsplanChanged(parser.getDateStamp()
+        // )) {
 
             try {
                 Document doc = parser.getDocumentViaLogin(VertretungsplanParser
@@ -153,14 +154,39 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private ContentValues getVertretungsplanContentValues(String[] entry, String date) {
         long dateId = getDateId(date);
+
+        /** Look at {@link VertretungsplanParser} for more info on the
+         * mapping. */
+        final int PERIOD_INDEX = 0;
+        final int CLASS_INDEX = 1;
+        final int SUBJECT_INDEX = 2;
+        final int VERTRETEN_DURCH_INDEX = 3;
+        final int ROOM_INDEX = 4;
+        final int COMMENT_INDEX = 5;
+
+        String entryLowercase = entry[VERTRETEN_DURCH_INDEX].toLowerCase();
+        if(entryLowercase.contains("eigenverantw.") || entryLowercase
+                .contains("ur") || entryLowercase.contains("eva")) {
+            entry[COMMENT_INDEX] = entry[VERTRETEN_DURCH_INDEX]; // swap
+            // because the comment field is more suitable than the
+            // vertreten_durch field in this case.
+        } else {
+            if(entry[COMMENT_INDEX].isEmpty()) {
+                entry[COMMENT_INDEX] = "Vertretung"; // if the lesson is given by
+                // another teacher the comment field is empty and only the
+                // vertreten_durch field is populated. As we still want the
+                // comment field to display a value we set it manually.
+            }
+        }
+
         ContentValues entryValues = new ContentValues();
         entryValues.put(Vertretungen.COLUMN_DAYS_KEY, dateId);
-        entryValues.put(Vertretungen.COLUMN_PERIOD, entry[0]);
-        entryValues.put(Vertretungen.COLUMN_CLASS, entry[1]);
-        entryValues.put(Vertretungen.COLUMN_SUBJECT, entry[2]);
-        entryValues.put(Vertretungen.COLUMN_VERTRETEN_DURCH, entry[3]);
-        entryValues.put(Vertretungen.COLUMN_ROOM, entry[4]);
-        entryValues.put(Vertretungen.COLUMN_COMMENT, entry[5]);
+        entryValues.put(Vertretungen.COLUMN_PERIOD, entry[PERIOD_INDEX]);
+        entryValues.put(Vertretungen.COLUMN_CLASS, entry[CLASS_INDEX]);
+        entryValues.put(Vertretungen.COLUMN_SUBJECT, entry[SUBJECT_INDEX]);
+        entryValues.put(Vertretungen.COLUMN_VERTRETEN_DURCH, entry[VERTRETEN_DURCH_INDEX]);
+        entryValues.put(Vertretungen.COLUMN_ROOM, entry[ROOM_INDEX]);
+        entryValues.put(Vertretungen.COLUMN_COMMENT, entry[COMMENT_INDEX]);
 
         return entryValues;
     }
@@ -173,7 +199,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     private void addGeneralInfoEntry(String generalInfo, String date) {
             ContentValues entryValues = new ContentValues();
-            entryValues.put(GeneralInfo.COLUMN_MESSAGE, generalInfo);
+            entryValues.put(GeneralInfo.COLUMN_MESSAGE, generalInfo.trim());
+            entryValues.put(GeneralInfo.COLUMN_DAYS_KEY, getDateId(date));
             Uri generalInfoInsertUri = getContext().getContentResolver().insert(GeneralInfo
                     .CONTENT_URI, entryValues);
             ContentUris.parseId(generalInfoInsertUri);
@@ -202,6 +229,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     private void addAbsentClassesEntry(String absentClass, String date) {
             ContentValues entryValues = new ContentValues();
             entryValues.put(AbsentClasses.COLUMN_MESSAGE, absentClass);
+            entryValues.put(AbsentClasses.COLUMN_DAYS_KEY, getDateId(date));
             Uri absentClassesInsertUri = getContext().getContentResolver().insert(AbsentClasses
                     .CONTENT_URI, entryValues);
             ContentUris.parseId(absentClassesInsertUri);

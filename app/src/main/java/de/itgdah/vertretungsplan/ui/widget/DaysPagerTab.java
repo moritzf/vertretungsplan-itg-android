@@ -1,4 +1,6 @@
-package de.itgdah.vertretungsplan.ui;
+package de.itgdah.vertretungsplan.ui.widget;
+
+import de.itgdah.vertretungsplan.ui.DayListFragment;
 
 /**
  * Represents a tab displayed by {@link android.support.v4.view.ViewPager}.
@@ -14,12 +16,12 @@ public class DaysPagerTab {
      * Returns a new {@link android.support.v4.app.ListFragment} to be
      * displayed by the {@link android.support.v4.view.ViewPager}
      */
-    DayListFragment createFragment() { return new
+    public DayListFragment createFragment() { return new
             DayListFragment(); };
 
     /**
      * @return the title which represents this tab.
      */
-    CharSequence getTitle() { return mTitle; }
+    public CharSequence getTitle() { return mTitle; }
 
 }

@@ -14,10 +14,11 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/AppTheme.ActionBar"
+        android:title="@string/menu_bar_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/menu_bar_title"/>
+        android:theme="@style/Toolbar"
+        android:background="@color/primary"/>
 
     <de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout
         android:id="@+id/sliding_tabs"

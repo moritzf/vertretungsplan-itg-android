@@ -18,6 +18,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -88,6 +90,13 @@ public class AllgVertretungsplanActivity extends AppCompatActivity  {
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -107,8 +116,8 @@ public class AllgVertretungsplanActivity extends AppCompatActivity  {
             VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
 
+
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setTitle(getResources().getStringArray(R.array.drawer_titles)[0]);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
@@ -180,4 +189,14 @@ public class AllgVertretungsplanActivity extends AppCompatActivity  {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if(item.getItemId() == R.id.refresh_menu_item) {
+            VertretungsplanSyncAdapter.syncImmediately(this);
+            return true;
+        }
+        return false;
+
+    }
 }

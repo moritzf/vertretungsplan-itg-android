@@ -50,9 +50,9 @@ public class GeneralVertretungsplanActivity extends AppCompatActivity  {
                     String[] {Days.COLUMN_DATE}, null, null, Days._ID + " ASC");
             for (int i = 0; i < NUM_DAYS_IN_PAGER; i++) {
                 c.moveToPosition(i);
-               mDaysTabs.set(i, new DaysPagerTab(Utility
-                       .getDayOfTheWeekFromDate(Utility.getDateFromDb(c
-                               .getString(0)))));
+                mDaysTabs.set(i, new DaysPagerTab(Utility
+                        .getDayOfTheWeekFromDate(Utility.getDateFromDb(c
+                                .getString(0)))));
             }
             c.close();
             mDaysPagerAdapter.notifyDataSetChanged();
@@ -114,7 +114,6 @@ public class GeneralVertretungsplanActivity extends AppCompatActivity  {
             VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
 
-
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getStringArray(R.array.drawer_titles)[0]);
         toolbar.setTitleTextColor(Color.WHITE);
@@ -136,8 +135,8 @@ public class GeneralVertretungsplanActivity extends AppCompatActivity  {
                 .text1);
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setSelectedIndicatorColors(Color.WHITE);
-        mSlidingTabLayout.setViewPager(mDaysPager);
 
+        mSlidingTabLayout.setViewPager(mDaysPager);
     }
 
     /** Swaps fragments in the main content view */

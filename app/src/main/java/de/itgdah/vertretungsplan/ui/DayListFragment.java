@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -109,7 +108,7 @@ public class DayListFragment extends ListFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout
-                .vertretungsplan_fragment, container, false);
+                .sliding_tabs_vertretungsplan_day_fragment, container, false);
 
         // mVertretungsplanAdapter init
         String[] mVertretungsplanListColumns = {
@@ -127,7 +126,7 @@ public class DayListFragment extends ListFragment implements
 
         mVertretungenAdapter = new SimpleCursorAdapter(
                 getActivity(),
-                R.layout.vertretungen_listitem,
+                R.layout.vertretungen_list_item,
                 null,
                 mVertretungsplanListColumns, // column names
                 mVertretungsplanListItems, // view ids
@@ -141,15 +140,15 @@ public class DayListFragment extends ListFragment implements
         int[] mGeneralInfoListItems = {
                 R.id.text_view_general_info };
         mGeneralInfoAdapter = new SimpleCursorAdapter(getActivity(), R.layout
-                .general_info_item, null, mGeneralInfoListColumns,
+                .general_info_list_item, null, mGeneralInfoListColumns,
                 mGeneralInfoListItems, 0);
 
         // list view headers init
         LayoutInflater factory = LayoutInflater.from(getActivity());
         mVertretungenHeader = factory.inflate(R.layout
-                .vertretungen_header, null);
+                .vertretungen_list_header, null);
         mGeneralInfoHeader = factory.inflate(R.layout
-                .general_info_header, null);
+                .general_info_list_header, null);
 
         // mMergeAdapter init
         mMergeAdapter = new MergeAdapter();

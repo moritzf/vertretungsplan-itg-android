@@ -1,0 +1,55 @@
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawer_base_activity"
+    style="@style/AppTheme"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ui.BaseVertretungsplanActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:theme="@style/Toolbar"/>
+
+        <ViewStub
+            android:id="@+id/sliding_tabs_stub"
+            android:inflatedId="@+id/sliding_tabs"
+            android:layout="@layout/sliding_tabs_strip_element"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:id="@+id/tabs_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/tabs_shadow"/>
+
+        <ViewStub
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/vertretungsplan_days_pager"
+            android:id="@+id/vertretungsplan_days_pager_stub"
+            android:layout="@layout/vertretungsplan_days_pager"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/main_drawer"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@android:color/white"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"/>
+
+</android.support.v4.widget.DrawerLayout>

@@ -120,6 +120,7 @@ public class GeneralVertretungsplanActivity extends AppCompatActivity  {
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
+        // placeholder tabs
         mDaysTabs.add(new DaysPagerTab(""));
         mDaysTabs.add(new DaysPagerTab(""));
         mDaysTabs.add(new DaysPagerTab(""));

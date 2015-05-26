@@ -9,7 +9,7 @@
           android:layout_height="48dp"
           android:gravity="center"
           android:textColor="@color/days_tab_color"
-          android:textSize="12sp"
+          android:textSize="13sp"
           android:textStyle="bold"
           android:textAllCaps="true"
     />

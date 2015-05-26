@@ -11,7 +11,7 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
         android:text="@string/my_data_class"
         android:id="@+id/my_data_class_input"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="16dp"
         android:textColor="@color/header_title"/>
 
@@ -19,7 +19,7 @@
         android:layout_width="299dp"
         android:layout_height="wrap_content"
         android:id="@+id/editText"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginBottom="18dp"
         android:text="33"/>
 
@@ -29,7 +29,7 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
         android:text="@string/my_data_subject"
         android:id="@+id/textView2"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="8dp"
         android:textColor="@color/header_title"/>
 

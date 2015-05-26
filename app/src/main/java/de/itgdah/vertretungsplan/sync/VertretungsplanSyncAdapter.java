@@ -63,7 +63,7 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void updateDatabase() {
 
-        VertretungsplanParser parser = new VertretungsplanParser();
+        VertretungsplanParser parser = new VertretungsplanParser(getContext());
         if (isOnline() && hasVertretungsplanChanged(parser.getDateStamp())) {
 
             try {
@@ -222,26 +222,31 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     /**
      * Adds a general info line to the database.
      *
-     * @param absentClass String containing one absent class.
+     * @param absentClass String array containing one absent class.
      * @param date        the date associated with the general info.
      */
-    private void addAbsentClassesEntry(String absentClass, String date) {
+    private void addAbsentClassesEntry(String[] absentClass, String date) {
             ContentValues entryValues = new ContentValues();
-            entryValues.put(AbsentClasses.COLUMN_MESSAGE, absentClass);
+            // for an index mapping, please refer to the VertretungplanParser
+            // class
+            entryValues.put(AbsentClasses.COLUMN_CLASS, absentClass[0]);
+            entryValues.put(AbsentClasses.COLUMN_PERIOD_RANGE, absentClass[1]);
+            entryValues.put(AbsentClasses.COLUMN_COMMENT, absentClass[2]);
             entryValues.put(AbsentClasses.COLUMN_DAYS_KEY, getDateId(date));
             Uri absentClassesInsertUri = getContext().getContentResolver().insert(AbsentClasses
                     .CONTENT_URI, entryValues);
             ContentUris.parseId(absentClassesInsertUri);
     }
 
-    private void addAbsentClassesEntries(HashMap<String, ArrayList<String>> absentClassesEntries,
+    private void addAbsentClassesEntries(HashMap<String, ArrayList<String[]>>
+            absentClassesEntries,
                                          String[] dates) {
         getContext().getApplicationContext().getContentResolver().delete(AbsentClasses
                 .CONTENT_URI, null, null);
         for (String date : dates) {
-            ArrayList<String> absentClasses = absentClassesEntries.get(date);
+            ArrayList<String[]> absentClasses = absentClassesEntries.get(date);
             if (absentClasses != null) {
-                for (String entry : absentClasses) {
+                for (String[] entry : absentClasses) {
                     addAbsentClassesEntry(entry, date);
                 }
             }

@@ -34,7 +34,7 @@ public class BaseVertretungsplanActivity extends BaseActivity {
     // tabs related
     public ViewPager mDaysPager;
     public int NUM_DAYS_IN_PAGER = 3;
-    public DaysPagerAdapter mDaysPagerAdapter;
+    public BaseDaysPagerAdapter mDaysPagerAdapter;
     SlidingTabLayout mSlidingTabLayout;
     List<DaysPagerTab> mDaysTabs = new ArrayList<>();
 
@@ -65,7 +65,7 @@ public class BaseVertretungsplanActivity extends BaseActivity {
         mDaysPager = (ViewPager) findViewById(R.id
                 .vertretungsplan_days_pager);
         mDaysPagerAdapter = new
-                DaysPagerAdapter(getFragmentManager());
+                BaseDaysPagerAdapter(getFragmentManager());
         mDaysPager.setAdapter(mDaysPagerAdapter);
 
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
@@ -107,7 +107,7 @@ public class BaseVertretungsplanActivity extends BaseActivity {
         return false;
     }
 
-    private boolean updateTabs() {
+    public boolean updateTabs() {
         boolean success = false;
         Cursor c = getContentResolver().query(Days.CONTENT_URI, new
                 String[] {Days.COLUMN_DATE}, null, null, Days._ID + " ASC");
@@ -129,9 +129,9 @@ public class BaseVertretungsplanActivity extends BaseActivity {
     /**
      * Adapter for the Days Pager.
      */
-    public class DaysPagerAdapter extends FragmentPagerAdapter {
+    public class BaseDaysPagerAdapter extends FragmentPagerAdapter {
 
-        public DaysPagerAdapter(FragmentManager fm) {
+        public BaseDaysPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -147,9 +147,9 @@ public class BaseVertretungsplanActivity extends BaseActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Fragment dayListFragment = new DayListFragment();
+            Fragment dayListFragment = new BaseDayListFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt(DayListFragment.PAGER_POSITION_KEY, position);
+            bundle.putInt(BaseDayListFragment.PAGER_POSITION_KEY, position);
             dayListFragment.setArguments(bundle);
             return dayListFragment;
         }

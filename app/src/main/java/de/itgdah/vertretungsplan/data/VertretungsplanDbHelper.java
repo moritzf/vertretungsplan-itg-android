@@ -37,9 +37,11 @@ class VertretungsplanDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_ABSENT_CLASSES_TABLE = "CREATE TABLE " +
                 AbsentClasses.TABLE_NAME + " (" +
                 AbsentClasses._ID + " INTEGER PRIMARY KEY " +
-                "AUTOINCREMENT," +
+                "AUTOINCREMENT, " +
                 AbsentClasses.COLUMN_DAYS_KEY + " INTEGER, " +
-                AbsentClasses.COLUMN_MESSAGE + " TEXT," +
+                AbsentClasses.COLUMN_CLASS + " TEXT, " +
+                AbsentClasses.COLUMN_PERIOD_RANGE + " TEXT, " +
+                AbsentClasses.COLUMN_COMMENT + " TEXT, " +
                 " FOREIGN KEY (" + AbsentClasses.COLUMN_DAYS_KEY + ") " +
                 "REFERENCES " + Days.TABLE_NAME + " (" + Days._ID +
                 ") )";

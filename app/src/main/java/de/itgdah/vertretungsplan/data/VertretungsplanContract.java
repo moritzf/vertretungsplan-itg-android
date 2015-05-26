@@ -153,8 +153,14 @@ public class VertretungsplanContract {
         // Table name
         public static final String TABLE_NAME = "absent_classes";
 
-        // Message defining the absent class and the reason why it is absent.
-        public static final String COLUMN_MESSAGE = "message";
+        // Message defining the the reason why it is absent.
+        public static final String COLUMN_COMMENT = "message";
+
+        // The absent class
+        public static final String COLUMN_CLASS = "class";
+
+        // period range in which the class is absent
+        public static final String COLUMN_PERIOD_RANGE = "period_range";
 
         // Foreign key pointing to the days table.
         public static final String COLUMN_DAYS_KEY = "days_id";

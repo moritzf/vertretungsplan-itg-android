@@ -1,6 +1,8 @@
 package de.itgdah.vertretungsplan.web;
 
+import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,6 +15,7 @@ import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -22,6 +25,12 @@ import java.util.regex.Pattern;
 import de.itgdah.vertretungsplan.util.Utility;
 
 public class VertretungsplanParser implements LoginConstants {
+
+    Context mContext;
+
+    public VertretungsplanParser(Context context) {
+        mContext = context;
+    }
 
     /** Constants */
 
@@ -111,21 +120,23 @@ public class VertretungsplanParser implements LoginConstants {
 
     /**
      * Returns a HashMap of the absent classes where the key is the date and the
-     * value is an array of the absent classes.
+     * value is an array of the absent classes. Each absent class is defined
+     * by an array consisting of the fields class, period range, comment in
+     * this order.
      */
-    public HashMap<String, ArrayList<String>> getAbsentClasses(Document doc) {
+    public HashMap<String, ArrayList<String[]>> getAbsentClasses(Document doc) {
         String[] dateArray = getAvailableVertretungsplaeneDates(doc);
-        HashMap<String, ArrayList<String>> map =
+        HashMap<String, ArrayList<String[]>> map =
                 new HashMap<>();
 
         // all absent classes tables are of class K
         Elements absentClasses = doc.select("table.K");
         for (int i = 0; i < absentClasses.size(); i++) {
-            ArrayList<String> list = new ArrayList<>();
+            ArrayList<String[]> list = new ArrayList<>();
             Element table = absentClasses.get(i);
             Elements rows = table.select("tr.K");
             for (Element row : rows) {
-                list.add(row.text());
+                list.add(splitAbsentClassesRowIntoChunks(row));
             }
             map.put(dateArray[i], list);
         }
@@ -244,6 +255,20 @@ public class VertretungsplanParser implements LoginConstants {
             }
             // Trim non-breaking spaces
             rowTokens[count++] = rawRowElems.get(i).text().replaceAll("\\u00A0", "");
+        }
+        return rowTokens;
+    }
+
+    /**
+     * Splits the specified row into three tokens (class, periods, comment)
+     * and returns them as a fixed-length array;
+     */
+    private String[] splitAbsentClassesRowIntoChunks(Element row) {
+        String[] rowTokens = new String[3];
+        rowTokens[0] = row.getElementsByTag("th").text();
+        Elements rawRowElems = row.select("td");
+        for (int i = 1; i <= rawRowElems.size(); i++) {
+            rowTokens[i] = rawRowElems.get(i-1).text();
         }
         return rowTokens;
     }

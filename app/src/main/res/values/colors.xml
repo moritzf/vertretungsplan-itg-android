@@ -2,6 +2,6 @@
 <resources>
     <item name="primary" type="color">#FF0066ff</item>
     <item name="primaryDark" type="color">#FF0051cc</item>
-    <item name="accent" type="color">#FFFFFFFF</item>
-    <item name="headerTitle" type="color">#8C000000</item>
+    <item name="accent" type="color">FF3D00</item>
+    <item name="header_title" type="color">#8C000000</item>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+        android:text="@string/my_data_class"
+        android:id="@+id/my_data_class_input"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/header_title"/>
+
+    <EditText
+        android:layout_width="299dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="18dp"
+        android:text="33"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+        android:text="@string/my_data_subject"
+        android:id="@+id/textView2"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/header_title"/>
+
+    <include layout="@layout/my_data_input_field_item"/>
+
+</LinearLayout>

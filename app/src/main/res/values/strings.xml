@@ -15,4 +15,11 @@
 
     <string name="refresh">Aktualisieren</string>
     <string name="general_info_table_header">Allg. Infos</string>
+    <string name="absent_classes_table_header">Abwesende Klassen</string>
+    <string name="my_data">Meine Daten</string>
+    <string name="my_data_done">Fertig</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+    <string name="my_data_class">Klasse</string>
+    <string name="my_data_subject">Fächer / Kurse</string>
 </resources>

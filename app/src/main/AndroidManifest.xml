@@ -27,6 +27,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.MyVertretungsplanActivity"/>
+
+        <activity android:name=".ui.MyDataActivity"
+                  android:parentActivityName="de.itgdah.vertretungsplan.ui.MyVertretungsplanActivity">
+                  <meta-data
+                      android:name="android.support.PARENT_ACTIVITY"
+                      android:value="de.itgdah.vertretungsplan.ui.MyVertretungsplanActivity"/>
+        </activity>
+
         <provider
             android:authorities="de.itgdah.vertretungsplan"
             android:name=".data.VertretungsplanProvider"

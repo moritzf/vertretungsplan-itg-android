@@ -39,12 +39,18 @@
             android:inflatedId="@+id/vertretungsplan_days_pager"
             android:id="@+id/vertretungsplan_days_pager_stub"
             android:layout="@layout/vertretungsplan_days_pager"/>
+        <ViewStub
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/my_data_fragment"
+            android:id="@+id/my_data_fragment_stub"
+            android:layout="@layout/my_data_fragment"/>
 
     </LinearLayout>
 
     <ListView
         android:id="@+id/main_drawer"
-        android:layout_width="280dp"
+        android:layout_width="220dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@android:color/white"

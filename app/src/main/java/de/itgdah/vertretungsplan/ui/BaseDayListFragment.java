@@ -20,10 +20,10 @@ import android.widget.SimpleCursorAdapter;
 import com.commonsware.cwac.merge.MergeAdapter;
 
 import de.itgdah.vertretungsplan.R;
+import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.GeneralInfo;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Vertretungen;
-import de.itgdah.vertretungsplan.data.VertretungsplanContract.AbsentClasses;
 import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 
 /**
@@ -42,6 +42,7 @@ public class BaseDayListFragment extends ListFragment implements
     private static final int VERTRETUNGEN_LOADER_ID = 0;
     private static final int GENERAL_INFO_LOADER_ID = 1;
     private static final int ABSENT_CLASSES_LOADER_ID = 2;
+    private static final int DAYS_LOADER_ID = 3;
     /**
      * Stores the dateIds of the days in the vertretungsplan table. Used for
      * filtering by date in onCreateLoader.
@@ -69,22 +70,7 @@ public class BaseDayListFragment extends ListFragment implements
         public void onReceive(Context context, Intent intent) {
             Log.v(LOG_TAG, "Sync performed.");
 
-/*             populates the dateIdsArray. This logic is necessary as we
-             can't depend on the date table being already populated in
-             onCreateLoader. As the date ids are necessary for filtering, we
-             fetch them after the sync with the server has been completed,
-             i.e. onPerformSync has finished.*/
-            Cursor c = getActivity().getContentResolver().query(Days
-                            .CONTENT_URI, new
-                            String[]{Days._ID}, null, null,
-                    Days._ID + " ASC");
-            for (int i = 0; i < c.getCount(); i++) {
-                c.moveToPosition(i);
-                dateIdsArray[i] = c.getString(0);
-            }
-            c.close();
-
-
+            getLoaderManager().restartLoader(DAYS_LOADER_ID, null, mHandle);
             getLoaderManager().restartLoader(VERTRETUNGEN_LOADER_ID, null, mHandle);
             getLoaderManager().restartLoader(GENERAL_INFO_LOADER_ID, null, mHandle);
             getLoaderManager().restartLoader(ABSENT_CLASSES_LOADER_ID, null, mHandle);
@@ -152,7 +138,7 @@ public class BaseDayListFragment extends ListFragment implements
         String[] absentClassesListColumns = {
                 AbsentClasses.COLUMN_PERIOD_RANGE,
                 AbsentClasses.COLUMN_CLASS,
-            AbsentClasses.COLUMN_COMMENT,
+                AbsentClasses.COLUMN_COMMENT,
                 AbsentClasses._ID
         };
         int[] absentClassesInfoListItems = {
@@ -185,6 +171,7 @@ public class BaseDayListFragment extends ListFragment implements
         mMergeAdapter.addAdapter(mAbsentClassesAdapter);
         setListAdapter(mMergeAdapter);
 
+        getLoaderManager().initLoader(DAYS_LOADER_ID, null, this);
         getLoaderManager().initLoader(GENERAL_INFO_LOADER_ID, null, this);
         getLoaderManager().initLoader(VERTRETUNGEN_LOADER_ID, null, this);
         getLoaderManager().initLoader(ABSENT_CLASSES_LOADER_ID, null, this);
@@ -225,6 +212,10 @@ public class BaseDayListFragment extends ListFragment implements
                 return new CursorLoader(getActivity(), AbsentClasses
                         .CONTENT_URI, null, mSelection, selectionArgs, null);
             }
+            case DAYS_LOADER_ID: {
+                return new CursorLoader(getActivity(), Days.CONTENT_URI,
+                        null, null, null, null);
+            }
             default:
                 return null;
         }
@@ -244,12 +235,25 @@ public class BaseDayListFragment extends ListFragment implements
                     mMergeAdapter.setActive(mGeneralInfoHeader, true);
                 }
                 mGeneralInfoAdapter.swapCursor(data);
-            } break;
+            }
+            break;
             case ABSENT_CLASSES_LOADER_ID: {
                 if (!mNullFix && data.getCount() > 0) {
                     mMergeAdapter.setActive(mAbsentClassesHeader, true);
                 }
                 mAbsentClassesAdapter.swapCursor(data);
+            }
+            break;
+            case DAYS_LOADER_ID: {
+/*             populates the dateIdsArray. This logic is necessary as we
+             can't depend on the date table being already populated in
+             onCreateLoader. As the date ids are necessary for filtering, we
+             fetch them after the sync with the server has been completed,
+             i.e. onPerformSync has finished.*/
+                for (int i = 0; i < data.getCount(); i++) {
+                    data.moveToPosition(i);
+                    dateIdsArray[i] = data.getString(0);
+                }
             }
             break;
         }
@@ -265,7 +269,8 @@ public class BaseDayListFragment extends ListFragment implements
             break;
             case GENERAL_INFO_LOADER_ID: {
                 mGeneralInfoAdapter.swapCursor(null);
-            } break;
+            }
+            break;
             case ABSENT_CLASSES_LOADER_ID: {
                 mAbsentClassesAdapter.swapCursor(null);
             }

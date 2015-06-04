@@ -53,12 +53,6 @@ public class BaseDayListFragment extends ListFragment implements
     SimpleCursorAdapter mAbsentClassesAdapter;
     MergeAdapter mMergeAdapter;
 
-    /**
-     * Used as a workaround for the fact that the loader may be created
-     * before the database has been fully build.
-     */
-    private boolean mNullFix;
-
     // necessary for restartLoader in onReceive.
     private BaseDayListFragment mHandle = this;
     /**
@@ -184,18 +178,10 @@ public class BaseDayListFragment extends ListFragment implements
         // check if dates are available
         String dayId = dateIdsArray[0] != null ? dateIdsArray[position] : "";
         String[] selectionArgs;
-
-        if (!dayId.isEmpty()) {
             // if the dayIds are available, select date id that corresponds
             // to the position in the pager.
             selectionArgs = new String[]{dayId};
             mSelection = Vertretungen.COLUMN_DAYS_KEY + " = ?";
-            mNullFix = false;
-        } else {
-            // return all days
-            selectionArgs = null;
-            mNullFix = true;
-        }
         switch (id) {
             case VERTRETUNGEN_LOADER_ID: {
                 return new CursorLoader(getActivity(), Vertretungen
@@ -231,14 +217,14 @@ public class BaseDayListFragment extends ListFragment implements
             }
             break;
             case GENERAL_INFO_LOADER_ID: {
-                if (!mNullFix && data.getCount() > 0) {
+                if (data.getCount() > 0) {
                     mMergeAdapter.setActive(mGeneralInfoHeader, true);
                 }
                 mGeneralInfoAdapter.swapCursor(data);
             }
             break;
             case ABSENT_CLASSES_LOADER_ID: {
-                if (!mNullFix && data.getCount() > 0) {
+                if (data.getCount() > 0) {
                     mMergeAdapter.setActive(mAbsentClassesHeader, true);
                 }
                 mAbsentClassesAdapter.swapCursor(data);

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.itgdah.vertretungsplan.R;
-import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract.Days;
+import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 import de.itgdah.vertretungsplan.ui.widget.DaysPagerTab;
 import de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout;
 import de.itgdah.vertretungsplan.util.Utility;
@@ -29,6 +29,19 @@ import de.itgdah.vertretungsplan.util.Utility;
  * Created by moritz on 26.05.15.
  */
 public class MyVertretungsplanActivity extends BaseActivity {
+    // tabs related
+    public ViewPager mDaysPager;
+    public int NUM_DAYS_IN_PAGER = 3;
+    public MyDaysPagerAdapter mDaysPagerAdapter;
+    SlidingTabLayout mSlidingTabLayout;
+    List<DaysPagerTab> mDaysTabs = new ArrayList<>();
+    private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateTabs();
+        }
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
@@ -40,39 +53,24 @@ public class MyVertretungsplanActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if(item.getItemId() == R.id.refresh_menu_item) {
+        if (item.getItemId() == R.id.refresh_menu_item) {
             VertretungsplanSyncAdapter.syncImmediately(this);
             return true;
         }
-        if(item.getItemId() == R.id.my_data_menu_item) {
+        if (item.getItemId() == R.id.my_data_menu_item) {
             startActivity(new Intent(this, MyDataActivity.class));
             return true;
         }
         return false;
     }
 
-    // tabs related
-    public ViewPager mDaysPager;
-    public int NUM_DAYS_IN_PAGER = 3;
-    public MyDaysPagerAdapter mDaysPagerAdapter;
-    SlidingTabLayout mSlidingTabLayout;
-    List<DaysPagerTab> mDaysTabs = new ArrayList<>();
-
-    private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateTabs();
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mDrawerPositionSelf = 1;
         super.onCreate(savedInstanceState);
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
-        VertretungsplanSyncAdapter.syncImmediately(this);
         findViewById(R.id.sliding_tabs_stub).setVisibility(View.VISIBLE);
         findViewById(R.id.vertretungsplan_days_pager_stub).setVisibility(View
                 .VISIBLE);
@@ -118,7 +116,7 @@ public class MyVertretungsplanActivity extends BaseActivity {
     public boolean updateTabs() {
         boolean success = false;
         Cursor c = getContentResolver().query(Days.CONTENT_URI, new
-                String[] {Days.COLUMN_DATE}, null, null, Days._ID + " ASC");
+                String[]{Days.COLUMN_DATE}, null, null, Days._ID + " ASC");
         if (c.getCount() > 0) {
             for (int i = 0; i < NUM_DAYS_IN_PAGER; i++) {
                 c.moveToPosition(i);

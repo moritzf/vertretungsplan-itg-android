@@ -13,6 +13,13 @@ public class DaysPagerTab {
     }
 
     /**
+     * Returns a new {@link android.support.v4.app.ListFragment} to be
+     * displayed by the {@link android.support.v4.view.ViewPager}
+     */
+    public GeneralDayListFragment createFragment() { return new
+            GeneralDayListFragment(); };
+
+    /**
      * @return the title which represents this tab.
      */
     public CharSequence getTitle() { return mTitle; }

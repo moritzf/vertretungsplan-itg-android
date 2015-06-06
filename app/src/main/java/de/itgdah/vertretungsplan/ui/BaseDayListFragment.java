@@ -150,6 +150,7 @@ public class BaseDayListFragment extends ListFragment implements
         // mMergeAdapter init
         mMergeAdapter = new MergeAdapter();
         mMergeAdapter.addView(mVertretungenHeader);
+        mMergeAdapter.setActive(mVertretungenHeader, false);
         mMergeAdapter.addAdapter(mVertretungenAdapter);
         mMergeAdapter.addView(mGeneralInfoHeader);
         mMergeAdapter.setActive(mGeneralInfoHeader, false);
@@ -169,8 +170,12 @@ public class BaseDayListFragment extends ListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         String dayId = getArguments().getString(DAY_ID_KEY);
-
-        String[] selectionArgs = new String[]{dayId};
+        String[] selectionArgs;
+        if (dayId != null) {
+            selectionArgs = new String[]{dayId};
+        } else {
+           selectionArgs = null;
+        }
         mSelection = Vertretungen.COLUMN_DAYS_KEY + " = ?";
 
         switch (id) {
@@ -199,6 +204,9 @@ public class BaseDayListFragment extends ListFragment implements
         int id = loader.getId();
         switch (id) {
             case VERTRETUNGEN_LOADER_ID: {
+                if (data.getCount() > 0) {
+                    mMergeAdapter.setActive(mVertretungenHeader, true);
+                }
                 mVertretungenAdapter.swapCursor
                         (data);
             }

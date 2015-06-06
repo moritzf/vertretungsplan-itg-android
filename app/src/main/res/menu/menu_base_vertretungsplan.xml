@@ -5,8 +5,4 @@
     <item android:id="@+id/refresh_menu_item"
           android:title="@string/refresh"
           app:showAsAction="never" />
-      <item android:id="@+id/my_data_menu_item"
-            android:title="@string/my_data"
-            app:showAsAction="never"
-          android:visible="false"/>
 </menu>

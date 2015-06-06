@@ -157,6 +157,7 @@ public class BaseDayListFragment extends ListFragment implements
         mMergeAdapter = new MergeAdapter();
         mMergeAdapter.addView(mVertretungenHeader);
         mMergeAdapter.addAdapter(mVertretungenAdapter);
+        mMergeAdapter.setActive(mVertretungenHeader, false);
         mMergeAdapter.addView(mGeneralInfoHeader);
         mMergeAdapter.setActive(mGeneralInfoHeader, false);
         mMergeAdapter.addAdapter(mGeneralInfoAdapter);
@@ -212,6 +213,9 @@ public class BaseDayListFragment extends ListFragment implements
         int id = loader.getId();
         switch (id) {
             case VERTRETUNGEN_LOADER_ID: {
+                if (data.getCount() > 0) {
+                    mMergeAdapter.setActive(mVertretungenHeader, true);
+                }
                 mVertretungenAdapter.swapCursor
                         (data);
             }

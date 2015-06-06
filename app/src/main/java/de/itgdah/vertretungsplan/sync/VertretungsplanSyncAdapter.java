@@ -64,8 +64,8 @@ public class VertretungsplanSyncAdapter extends AbstractThreadedSyncAdapter {
     private void updateDatabase() {
 
         VertretungsplanParser parser = new VertretungsplanParser(getContext());
-        if (isOnline()) { //&& hasVertretungsplanChanged(parser.getDateStamp()
-        // )) {
+        if (isOnline() && hasVertretungsplanChanged(parser.getDateStamp()
+         )) {
 
             try {
                 Document doc = parser.getDocumentViaLogin(VertretungsplanParser

@@ -22,6 +22,8 @@ import de.itgdah.vertretungsplan.R;
  */
 public class BaseActivity extends AppCompatActivity {
 
+    public static final String SHARED_PREFERENCES_FILENAME = "vertretungsplan" +
+            ".preferences";
     // drawer related
     public String[] mTitles;
     public DrawerLayout mDrawerLayout;

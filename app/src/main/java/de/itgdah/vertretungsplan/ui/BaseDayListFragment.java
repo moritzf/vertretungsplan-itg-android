@@ -39,7 +39,7 @@ public class BaseDayListFragment extends ListFragment implements
     public static final String PAGER_POSITION_KEY = "pos";
 
     private static final String LOG_TAG = GeneralDayListFragment.class.getSimpleName();
-    private static final int VERTRETUNGEN_LOADER_ID = 0;
+    public static final int VERTRETUNGEN_LOADER_ID = 0;
     private static final int GENERAL_INFO_LOADER_ID = 1;
     private static final int ABSENT_CLASSES_LOADER_ID = 2;
     private static final int DAYS_LOADER_ID = 3;
@@ -74,8 +74,12 @@ public class BaseDayListFragment extends ListFragment implements
 
     private View mVertretungenHeader;
     private View mGeneralInfoHeader;
-    private String mSelection = null;
+    private String[] mSelectionArgs = null;
     private View mAbsentClassesHeader;
+    public String mSelection = Vertretungen.COLUMN_DAYS_KEY + " = ? ";
+    /* Handles the filtering in myVertretungsplan */
+    public String mCustomSelection = null;
+    public String[] mCustomSelectionArgs = null;
 
     @Override
     public void onPause() {
@@ -178,26 +182,36 @@ public class BaseDayListFragment extends ListFragment implements
         int position = getArguments().getInt(PAGER_POSITION_KEY);
         // check if dates are available
         String dayId = dateIdsArray[0] != null ? dateIdsArray[position] : "";
-        String[] selectionArgs;
-            // if the dayIds are available, select date id that corresponds
+        // if the dayIds are available, select date id that corresponds
             // to the position in the pager.
-            selectionArgs = new String[]{dayId};
-            mSelection = Vertretungen.COLUMN_DAYS_KEY + " = ?";
+            mSelectionArgs = new String[]{dayId};
         switch (id) {
             case VERTRETUNGEN_LOADER_ID: {
-                return new CursorLoader(getActivity(), Vertretungen
-                        .CONTENT_URI, null, mSelection, selectionArgs,
-                        null);
+                if (mCustomSelection != null) {
+                    // assumes that mCustomSelection and mCustomSelectionArgs are
+                    // both initialized
+                    mCustomSelectionArgs[mCustomSelectionArgs.length - 1] = dayId;
+                    return new CursorLoader(getActivity(), Vertretungen
+                            .CONTENT_URI, null, mCustomSelection,
+                            mCustomSelectionArgs,
+                            null);
+                } else {
+                    return new CursorLoader(getActivity(), Vertretungen
+                            .CONTENT_URI, null, mSelection,
+                            mSelectionArgs,
+                            null);
+                }
             }
             case GENERAL_INFO_LOADER_ID: {
                 return new CursorLoader(getActivity(),
                         GeneralInfo.CONTENT_URI,
-                        null, mSelection, selectionArgs,
+                        null, mSelection, mSelectionArgs,
                         GeneralInfo._ID + " ASC");
             }
             case ABSENT_CLASSES_LOADER_ID: {
                 return new CursorLoader(getActivity(), AbsentClasses
-                        .CONTENT_URI, null, mSelection, selectionArgs, null);
+                        .CONTENT_URI, null, mSelection, mSelectionArgs,
+                        null);
             }
             case DAYS_LOADER_ID: {
                 return new CursorLoader(getActivity(), Days.CONTENT_URI,
@@ -215,6 +229,8 @@ public class BaseDayListFragment extends ListFragment implements
             case VERTRETUNGEN_LOADER_ID: {
                 if (data.getCount() > 0) {
                     mMergeAdapter.setActive(mVertretungenHeader, true);
+                } else {
+                    mMergeAdapter.setActive(mVertretungenHeader, false);
                 }
                 mVertretungenAdapter.swapCursor
                         (data);

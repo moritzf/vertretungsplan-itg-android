@@ -44,12 +44,14 @@ public class MyDataActivity extends BaseActivity {
                             MODE_PRIVATE);
 
             String classUser = mClassInput.getText().toString();
-            if (!classUser.isEmpty() && validateClassUser(classUser)) {
+            if (!classUser.isEmpty() && validateSubjectsAndClassesUser
+                    (classUser)) {
                 preferences.edit().putString(CLASS_OF_USER, classUser).apply();
             }
 
             String subjectsUser = mSubjectInput.getText().toString();
-            if (!subjectsUser.isEmpty() && validateSubjectsUser(subjectsUser)) {
+            if (!subjectsUser.isEmpty() && validateSubjectsAndClassesUser
+                    (subjectsUser)) {
                 preferences.edit().putString(SUBJECTS_OF_USER, subjectsUser)
                         .apply();
             }
@@ -62,17 +64,9 @@ public class MyDataActivity extends BaseActivity {
         return false;
     }
 
-    private boolean validateSubjectsUser(String subjectsUser) {
+    private boolean validateSubjectsAndClassesUser(String subjectsUser) {
         String subjectsUserStrippedOfWhitespace = subjectsUser.replaceAll
                 ("\\s+", "");
-        Pattern p = Pattern.compile("\\w+(,\\w+)*");
-        Matcher m = p.matcher(subjectsUserStrippedOfWhitespace);
-        return m.matches();
-    }
-
-    private boolean validateClassUser(String classUser) {
-        String subjectsUserStrippedOfWhitespace = classUser.replaceAll
-                ("\\s+", "^\\w+");
         Pattern p = Pattern.compile("\\w+(,\\w+)*");
         Matcher m = p.matcher(subjectsUserStrippedOfWhitespace);
         return m.matches();

@@ -22,4 +22,5 @@
     <string name="drawer_close">close</string>
     <string name="my_data_class">Klasse</string>
     <string name="my_data_subject">Fächer / Kurse</string>
+    <string name="class_cannot_be_empty">Bitte fülle das Klassenfeld aus.</string>
 </resources>

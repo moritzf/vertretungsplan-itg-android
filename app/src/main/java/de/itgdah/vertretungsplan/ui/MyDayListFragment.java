@@ -5,7 +5,6 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 
@@ -24,12 +23,26 @@ public class MyDayListFragment extends BaseDayListFragment {
                 .SUBJECTS_OF_USER, "");
         // necessary because preferences.getString() might throw type exception
         if (classesOfUser != null && subjectsOfUser != null) {
-            if (id == BaseDayListFragment.VERTRETUNGEN_LOADER_ID && !classesOfUser
-                    .isEmpty() && !subjectsOfUser.isEmpty()) {
+            if (id == BaseDayListFragment.VERTRETUNGEN_LOADER_ID &&
+                    !classesOfUser.isEmpty()) {
+
+                String[] classesArray = classesOfUser.split("\\s*,\\s*");
+                String inClauseClassesContent = "";
+                for (int i = 0; i < classesArray.length; i++) {
+                    if (i > 0) {
+                        inClauseClassesContent += ",";
+                    }
+                    inClauseClassesContent += "? ";
+                }
+
+                String selectionClasses = VertretungsplanContract.Vertretungen
+                        .COLUMN_CLASS + " IN (" + inClauseClassesContent
+                        + ")";
+                String selectionDay = " AND " + mSelection;
+
+                if (!subjectsOfUser.isEmpty()) {
                     String[] subjectsArray = subjectsOfUser.split("\\s*,\\s*");
-                    String[] classesArray = classesOfUser.split("\\s*,\\s*");
                     String inClauseSubjectsContent = "";
-                    String inClauseClassesContent = "";
                     for (int i = 0; i < subjectsArray.length; i++) {
                         if (i > 0) {
                             inClauseSubjectsContent += ",";
@@ -37,19 +50,12 @@ public class MyDayListFragment extends BaseDayListFragment {
                         inClauseSubjectsContent += "? ";
                     }
 
-                    for (int i = 0; i < classesArray.length; i++) {
-                        if (i > 0) {
-                            inClauseClassesContent += ",";
-                        }
-                        inClauseClassesContent += "? ";
-                    }
 
-                    mCustomSelection = VertretungsplanContract.Vertretungen
-                            .COLUMN_CLASS + " IN (" + inClauseClassesContent + ")"
-                            + " AND " + VertretungsplanContract
+                    String selectionSubjects = " AND " + VertretungsplanContract
                             .Vertretungen.COLUMN_SUBJECT + " IN ( " +
                             inClauseSubjectsContent + " ) ";
-                    mCustomSelection += " AND " + mSelection;
+                    mCustomSelection = selectionClasses + selectionSubjects +
+                            selectionDay;
 
                     mCustomSelectionArgs = new String[1 + subjectsArray.length +
                             classesArray.length];
@@ -61,6 +67,13 @@ public class MyDayListFragment extends BaseDayListFragment {
                         mCustomSelectionArgs[classesArray.length + i] =
                                 subjectsArray[i];
                     }
+                } else {
+                    mCustomSelection = selectionClasses + selectionDay;
+                    mCustomSelectionArgs = new String[1 + classesArray.length];
+                    for (int i = 0; i < classesArray.length; i++) {
+                        mCustomSelectionArgs[i] = classesArray[i];
+                    }
+                }
             }
         }
         return super.onCreateLoader(id, args);

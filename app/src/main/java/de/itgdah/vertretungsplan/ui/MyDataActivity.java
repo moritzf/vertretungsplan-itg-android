@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -44,13 +45,17 @@ public class MyDataActivity extends BaseActivity {
                             MODE_PRIVATE);
 
             String classUser = mClassInput.getText().toString();
-            if (!classUser.isEmpty() && validateSubjectsAndClassesUser
-                    (classUser)) {
-                preferences.edit().putString(CLASS_OF_USER, classUser).apply();
+            if (!classUser.isEmpty() ) {
+                if (validateSubjectsAndClassesUser(classUser)) {
+                    preferences.edit().putString(CLASS_OF_USER, classUser).apply();
+                }
+            } else {
+                Toast.makeText(this, R.string.class_cannot_be_empty, Toast
+                        .LENGTH_SHORT).show();
             }
 
             String subjectsUser = mSubjectInput.getText().toString();
-            if (!subjectsUser.isEmpty() && validateSubjectsAndClassesUser
+            if (subjectsUser.isEmpty() || validateSubjectsAndClassesUser
                     (subjectsUser)) {
                 preferences.edit().putString(SUBJECTS_OF_USER, subjectsUser)
                         .apply();

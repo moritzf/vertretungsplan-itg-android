@@ -88,6 +88,15 @@ public class BaseDayListFragment extends ListFragment implements
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getLoaderManager().restartLoader(DAYS_LOADER_ID, null, mHandle);
+        getLoaderManager().restartLoader(VERTRETUNGEN_LOADER_ID, null, mHandle);
+        getLoaderManager().restartLoader(GENERAL_INFO_LOADER_ID, null, mHandle);
+        getLoaderManager().restartLoader(ABSENT_CLASSES_LOADER_ID, null, mHandle);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter
@@ -181,6 +190,13 @@ public class BaseDayListFragment extends ListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         int position = getArguments().getInt(PAGER_POSITION_KEY);
         // check if dates are available
+        Cursor c = getActivity().getContentResolver().query(Days.CONTENT_URI,
+                null, null, null, null);
+        for (int i = 0; i < c.getCount(); i++) {
+            c.moveToPosition(i);
+            dateIdsArray[i] = c.getString(0);
+        }
+        c.close();
         String dayId = dateIdsArray[0] != null ? dateIdsArray[position] : "";
         // if the dayIds are available, select date id that corresponds
             // to the position in the pager.

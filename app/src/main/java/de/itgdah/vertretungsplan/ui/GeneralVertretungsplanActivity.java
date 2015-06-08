@@ -80,6 +80,7 @@ public class GeneralVertretungsplanActivity extends
         mToolbar.setTitle(getResources().getStringArray(R.array
                 .drawer_titles)[mDrawerPositionSelf]);
         setSupportActionBar(mToolbar);
+        updateTabs();
     }
 
     @Override

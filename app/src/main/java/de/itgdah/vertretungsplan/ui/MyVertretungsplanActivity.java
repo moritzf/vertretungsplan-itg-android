@@ -38,6 +38,13 @@ public class MyVertretungsplanActivity extends BaseActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mDaysPagerAdapter.notifyDataSetChanged();
+        mDaysPager.setAdapter(mDaysPagerAdapter);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         if(item.getItemId() == R.id.refresh_menu_item) {
@@ -45,7 +52,7 @@ public class MyVertretungsplanActivity extends BaseActivity {
             return true;
         }
         if(item.getItemId() == R.id.my_data_menu_item) {
-            startActivity(new Intent(this, MyDataActivity.class));
+            startActivityForResult(new Intent(this, MyDataActivity.class), 0);
             return true;
         }
         return false;
@@ -72,7 +79,6 @@ public class MyVertretungsplanActivity extends BaseActivity {
         if(savedInstanceState == null) {
             VertretungsplanSyncAdapter.initializeSyncAdapter(this);
         }
-        VertretungsplanSyncAdapter.syncImmediately(this);
         findViewById(R.id.sliding_tabs_stub).setVisibility(View.VISIBLE);
         findViewById(R.id.vertretungsplan_days_pager_stub).setVisibility(View
                 .VISIBLE);
@@ -81,7 +87,6 @@ public class MyVertretungsplanActivity extends BaseActivity {
         mDaysTabs.add(new DaysPagerTab(""));
         mDaysTabs.add(new DaysPagerTab(""));
         mDaysTabs.add(new DaysPagerTab(""));
-
 
         mDaysPager = (ViewPager) findViewById(R.id
                 .vertretungsplan_days_pager);
@@ -94,12 +99,12 @@ public class MyVertretungsplanActivity extends BaseActivity {
                 .text1);
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setSelectedIndicatorColors(Color.WHITE);
-
         mSlidingTabLayout.setViewPager(mDaysPager);
 
         mToolbar.setTitle(getResources().getStringArray(R.array
                 .drawer_titles)[mDrawerPositionSelf]);
         setSupportActionBar(mToolbar);
+        updateTabs();
     }
 
     @Override

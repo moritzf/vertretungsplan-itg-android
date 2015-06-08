@@ -49,7 +49,7 @@ public class VertretungsplanParser implements LoginConstants {
     public static final String URL_VERTRETUNGSPLAN =
             "http://www.itgdah.de/vp_app/VertretungsplanApp.html";
 
-    public static final int CONNECTION_TIMEOUT = 5000; // in milliseconds
+    public static final int CONNECTION_TIMEOUT = 500; // in milliseconds
 
     /**
      * Returns the document referenced by the url by performing a htaccess login.

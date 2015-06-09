@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="56dp">
+    android:layout_width="match_parent" android:layout_height="44dp">
 
     <TextView
         android:layout_width="32dp"
@@ -8,6 +8,7 @@
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="Std."
         android:id="@+id/text_view_vertretungen_period"
+        android:textColor="@color/textcolor"
         android:layout_centerVertical="true"
         android:layout_marginLeft="8dp" />
 
@@ -17,6 +18,7 @@
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="Klasse"
         android:id="@+id/text_view_vertretungen_class"
+        android:textColor="@color/textcolor"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/text_view_vertretungen_period"
         android:layout_toEndOf="@id/text_view_vertretungen_period"
@@ -28,6 +30,7 @@
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="Fach"
         android:id="@+id/text_view_vertretungen_subject"
+        android:textColor="@color/textcolor"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/text_view_vertretungen_class"
         android:layout_toEndOf="@id/text_view_vertretungen_class"
@@ -38,6 +41,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="Kommentar"
+        android:textColor="@color/textcolor"
         android:id="@+id/text_view_vertretungen_comment"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"

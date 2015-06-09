@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import de.itgdah.vertretungsplan.R;
 
@@ -28,6 +29,7 @@ public class BaseActivity extends AppCompatActivity {
     public String[] mTitles;
     public DrawerLayout mDrawerLayout;
     public ListView mDrawerList;
+    public RelativeLayout mDrawer;
     public Toolbar mToolbar;
     public ActionBarDrawerToggle mDrawerToggle;
     public int mDrawerPositionSelf = 0; // default value that's overrriden in
@@ -52,7 +54,8 @@ public class BaseActivity extends AppCompatActivity {
 
         mTitles = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_base_activity);
-        mDrawerList = (ListView) findViewById(R.id.main_drawer);
+        mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        mDrawer = (RelativeLayout) findViewById(R.id.main_drawer);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
@@ -90,7 +93,7 @@ public class BaseActivity extends AppCompatActivity {
                         MyVertretungsplanActivity.class)); } break;
             }
         }
-        mDrawerLayout.closeDrawer(mDrawerList);
+        mDrawerLayout.closeDrawer(mDrawer);
     }
 
     private class DrawerItemClickListener implements AdapterView.OnItemClickListener {

@@ -7,9 +7,13 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/absent_classes_table_header"
+        android:textColor="@color/primary"
         android:id="@+id/absent_classes_header"
+        android:background="@color/bg_lightgrey"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"/>
+        android:paddingTop="12dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="12dp"/>
 
 </RelativeLayout>

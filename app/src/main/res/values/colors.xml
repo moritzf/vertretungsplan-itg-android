@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="primary" type="color">#FF0066ff</item>
-    <item name="primaryDark" type="color">#FF0051cc</item>
-    <item name="accent" type="color">#00BFA5</item>
+    <item name="primary" type="color">#ff425dd3</item> <!-- Davor: #FF0066ff -->
+    <item name="primaryDark" type="color">#ff3a52b8</item>
+    <item name="accent" type="color">#ffd23874</item>
+    <item name="bg_lightgrey" type="color">#fff2f5f7</item>
+    <item name="textcolor" type="color">#ff373739</item>
     <item name="header_title" type="color">#8C000000</item>
 </resources>

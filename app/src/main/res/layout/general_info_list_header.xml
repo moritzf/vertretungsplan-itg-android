@@ -8,8 +8,13 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/general_info_table_header"
         android:id="@+id/general_info_header"
+        android:textColor="@color/primary"
+        android:background="@color/bg_lightgrey"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"/>
+        android:paddingTop="12dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="12dp"
+        />
 
 </RelativeLayout>

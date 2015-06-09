@@ -23,4 +23,6 @@
     <string name="my_data_class">Klasse</string>
     <string name="my_data_subject">Fächer / Kurse</string>
     <string name="class_cannot_be_empty">Bitte fülle das Klassenfeld aus.</string>
+    <string name="my_data_class_hint">z.B. 11, 11S (per Komma getrennt)</string>
+    <string name="my_data_subject_hint">z. B. 1sk4, 1d7 (per Komma getrennt)</string>
 </resources>

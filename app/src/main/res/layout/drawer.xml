@@ -43,8 +43,7 @@
         android:background="#fff"
         android:text="Einstellungen"
         android:layout_alignParentBottom="true"
-        android:textColor="#fff"
-        android:backgroundTint="@color/accent"
+        android:textColor="@color/textcolor"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/textView3" />

@@ -1,4 +1,4 @@
-package de.itgdah.vertretungsplan;
+package de.itgdah.vertretungsplan.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -13,37 +13,36 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import de.itgdah.vertretungsplan.R;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 import de.itgdah.vertretungsplan.sync.VertretungsplanSyncAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class VertretungsplanFragment extends Fragment implements LoaderManager
+public class AllgVertretungsplanFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = VertretungsplanFragment.class.getSimpleName();
+    private static final String LOG_TAG = AllgVertretungsplanFragment.class.getSimpleName();
     private SimpleCursorAdapter mVertretungsplanAdapter;
 
     // required for syncFinishedReceiver
-    private final VertretungsplanFragment handle = this;
+    private final AllgVertretungsplanFragment handle = this;
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "SYNC!");
             getLoaderManager().restartLoader(0, null, handle);
         }
     };
 
 
-    public VertretungsplanFragment() {
+    public AllgVertretungsplanFragment() {
     }
 
     @Override
@@ -92,7 +91,7 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
 
         mVertretungsplanAdapter = new SimpleCursorAdapter(
                 getActivity(),
-                R.layout.main_fragment_vertretungsplan_listitem,
+                R.layout.vertretungen_listitem,
                 null,
                 mVertretungsplanListColumns, // column names
                 mVertretungsplanListItems, // view ids
@@ -120,7 +119,7 @@ public class VertretungsplanFragment extends Fragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.main_fragment_vertretungsplan, container, false);
+        View rootView = inflater.inflate(R.layout.allg_vertretungsplan_fragment, container, false);
         ListView vertretungsplanView = (ListView) rootView.findViewById(R.id.vertretungsplan_listview);
         vertretungsplanView.setAdapter(mVertretungsplanAdapter);
         return rootView;

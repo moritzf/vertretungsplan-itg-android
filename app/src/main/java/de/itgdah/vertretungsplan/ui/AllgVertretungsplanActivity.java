@@ -1,32 +1,30 @@
-package de.itgdah.vertretungsplan;
+package de.itgdah.vertretungsplan.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import de.itgdah.vertretungsplan.R;
 
 
-public class MainActivity extends Activity {
+public class AllgVertretungsplanActivity extends Activity {
 
+    // Drawer related
     private String[] mTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.allg_vertretungsplan_activity);
 
         mTitles = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity);
@@ -40,10 +38,9 @@ public class MainActivity extends Activity {
 
         if(savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.main_contentframe, new VertretungsplanFragment())
+                    .replace(R.id.main_contentframe, new AllgVertretungsplanFragment())
                     .commit();
         }
-        mContext = getApplicationContext();
 
     }
 
@@ -57,7 +54,7 @@ public class MainActivity extends Activity {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new VertretungsplanFragment();
+        Fragment fragment = new AllgVertretungsplanFragment();
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()

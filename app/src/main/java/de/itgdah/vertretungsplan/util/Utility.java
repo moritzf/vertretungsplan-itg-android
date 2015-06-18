@@ -1,4 +1,4 @@
-package de.itgdah.vertretungsplan;
+package de.itgdah.vertretungsplan.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;

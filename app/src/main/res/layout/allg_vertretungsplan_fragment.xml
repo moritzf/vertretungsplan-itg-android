@@ -13,7 +13,7 @@
 
     <include
         android:id="@+id/vertretungsplan_table_labels"
-        layout="@layout/main_fragment_vertretungsplan_listitem"
+        layout="@layout/vertretungen_listitem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"/>

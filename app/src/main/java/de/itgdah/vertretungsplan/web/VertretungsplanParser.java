@@ -68,8 +68,7 @@ public class VertretungsplanParser implements LoginConstants {
         }
     }
 
-    /** Gets the date stamp of the Vertretungsplan. If the date stamp can't be retrieved "" is
-     * returned.*/
+    /** Gets the date stamp of the Vertretungsplan. If the date stamp can't be retrieved, an exception is thrown.*/
     public String getDateStamp() {
         Document doc = null;
         try {

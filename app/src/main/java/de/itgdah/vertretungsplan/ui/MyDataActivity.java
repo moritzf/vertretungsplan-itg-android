@@ -72,7 +72,7 @@ public class MyDataActivity extends BaseActivity {
     private boolean validateSubjectsAndClassesUser(String subjectsUser) {
         String subjectsUserStrippedOfWhitespace = subjectsUser.replaceAll
                 ("\\s+", "");
-        Pattern p = Pattern.compile("\\w+(,\\w+)*");
+        Pattern p = Pattern.compile("[^,]+(,[^,]+)*");
         Matcher m = p.matcher(subjectsUserStrippedOfWhitespace);
         return m.matches();
     }

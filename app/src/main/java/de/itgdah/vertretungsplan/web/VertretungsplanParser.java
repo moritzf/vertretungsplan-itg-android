@@ -155,29 +155,11 @@ public class VertretungsplanParser implements LoginConstants {
         // all general info tables are of class F
         Elements generalInfo = doc.select("table.F");
         for (int i = 0; i < generalInfo.size(); i++) {
-            Elements rows = generalInfo.get(i).select("tr.F");
+            Elements rows = generalInfo.get(i).select("th.F");
             ArrayList<String> list = new ArrayList<>();
-            String item = "";
-            int numEmptyRows = 0;
             for (Element row : rows) {
-                /**
-                 * The following logic is required due to special formatting in the
-                 * general info table.
-                 *
-                 */
-                if (row.text().isEmpty()) {
-                    numEmptyRows++;
-                }
-
-                if (!item.isEmpty()) {
-                    item += "\n";
-                }
-                item += row.text();
-                if ((row.text().isEmpty() && !item.isEmpty())
-                        || ((numEmptyRows == 0) && !item.isEmpty())) {
-                    list.add(item);
-                    item = "";
-                }
+                if (!row.text().isEmpty())
+                    list.add(row.text());
             }
             map.put(dateArray[i], list);
         }

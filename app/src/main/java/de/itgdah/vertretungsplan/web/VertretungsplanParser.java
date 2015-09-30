@@ -2,7 +2,6 @@ package de.itgdah.vertretungsplan.web;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +14,6 @@ import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,10 +32,12 @@ public class VertretungsplanParser implements LoginConstants {
 
     /** Constants */
 
-    /** Used in the login method. */
+    /**
+     * Used in the login method.
+     */
     private static final String LOGIN = USERNAME + ":" + PASSWORD;
     private static final String BASE_64_LOGIN = Base64.encodeToString(LOGIN.getBytes(), Base64.DEFAULT);
-    private String[] dateArray= new String[3];
+    private String[] dateArray = new String[3];
     private boolean isDateArraySet = false;
 
     /**
@@ -55,9 +55,8 @@ public class VertretungsplanParser implements LoginConstants {
      * Returns the document referenced by the url by performing a htaccess login.
      *
      * @throws MalformedURLException
-     *
      * @precondition Url points to a website with the domain
-     *               http://www.itgdah.de/vp_app/*
+     * http://www.itgdah.de/vp_app/*
      */
     public Document getDocumentViaLogin(String url) throws MalformedURLException {
         try {
@@ -68,7 +67,9 @@ public class VertretungsplanParser implements LoginConstants {
         }
     }
 
-    /** Gets the date stamp of the Vertretungsplan. If the date stamp can't be retrieved, an exception is thrown.*/
+    /**
+     * Gets the date stamp of the Vertretungsplan. If the date stamp can't be retrieved, an exception is thrown.
+     */
     public String getDateStamp() {
         Document doc = null;
         try {
@@ -77,7 +78,7 @@ public class VertretungsplanParser implements LoginConstants {
             e.printStackTrace();
         }
         // Select row that contains the date string.
-        if(doc == null) {
+        if (doc == null) {
             return "";
         }
         String data = doc.select("pre").text();
@@ -97,7 +98,7 @@ public class VertretungsplanParser implements LoginConstants {
      * 13/03/15 comes before 14/03/15.
      */
     public String[] getAvailableVertretungsplaeneDates(Document doc) {
-        if(isDateArraySet) {
+        if (isDateArraySet) {
             return dateArray;
         }
         // All h2 headings contain a Vertretungsplan date string.
@@ -117,6 +118,16 @@ public class VertretungsplanParser implements LoginConstants {
         return dateArray;
     }
 
+    private String[] getRawAvailableVertretungsplaeneDates(Document doc) {
+        String[] dateArray = new String[3];
+        Elements dates = doc.select("a[href]");
+
+        for (int i = 0; i < dates.size(); i++) {
+            dateArray[i] = dates.get(i).text();
+        }
+        return dateArray;
+    }
+
     /**
      * Returns a HashMap of the absent classes where the key is the date and the
      * value is an array of the absent classes. Each absent class is defined
@@ -124,21 +135,30 @@ public class VertretungsplanParser implements LoginConstants {
      * this order.
      */
     public HashMap<String, ArrayList<String[]>> getAbsentClasses(Document doc) {
-        String[] dateArray = getAvailableVertretungsplaeneDates(doc);
+        String[] normalizedDateArray = getAvailableVertretungsplaeneDates(doc);
+        String[] rawDateArray = getRawAvailableVertretungsplaeneDates(doc);
         HashMap<String, ArrayList<String[]>> map =
                 new HashMap<>();
 
-        // all absent classes tables are of class K
-        Elements absentClasses = doc.select("table.K");
-        for (int i = 0; i < absentClasses.size(); i++) {
+        for (int i = 0; i < rawDateArray.length; i++) {
+            Elements succeedingElements = doc.select("a[name=" + rawDateArray[i] + "] ~ *");
             ArrayList<String[]> list = new ArrayList<>();
-            Element table = absentClasses.get(i);
-            Elements rows = table.select("tr.K");
-            for (Element row : rows) {
-                list.add(splitAbsentClassesRowIntoChunks(row));
+            for (int j = 0; j < succeedingElements.size(); j++) {
+                if (succeedingElements.get(j).tagName().equals("table") && succeedingElements.get(j)
+                        .className().equals("K")) {
+                    Element absentClasses = succeedingElements.get(j);
+                    Elements rows = absentClasses.select("tr.K");
+                    for (Element row : rows) {
+                        list.add(splitAbsentClassesRowIntoChunks(row));
+                    }
+                    map.put(normalizedDateArray[i], list);
+                }
+                if (succeedingElements.get(j).tagName().equals("hr")) break;
             }
-            map.put(dateArray[i], list);
+            map.put(normalizedDateArray[i], list); // empty list since no absent classes for the
+            // day were found.
         }
+
         return map;
     }
 
@@ -148,20 +168,29 @@ public class VertretungsplanParser implements LoginConstants {
      * general info of the given day.
      */
     public HashMap<String, ArrayList<String>> getGeneralInfo(Document doc) {
-        String[] dateArray = getAvailableVertretungsplaeneDates(doc);
+        String[] normalizedDateArray = getAvailableVertretungsplaeneDates(doc);
+        String[] rawDateArray = getRawAvailableVertretungsplaeneDates(doc);
         HashMap<String, ArrayList<String>> map =
                 new HashMap<>();
 
-        // all general info tables are of class F
-        Elements generalInfo = doc.select("table.F");
-        for (int i = 0; i < generalInfo.size(); i++) {
-            Elements rows = generalInfo.get(i).select("th.F");
+        for (int i = 0; i < rawDateArray.length; i++) {
             ArrayList<String> list = new ArrayList<>();
-            for (Element row : rows) {
-                if (!row.text().isEmpty())
-                    list.add(row.text());
+            Elements succeedingElements = doc.select("a[name=" + rawDateArray[i] + "] ~ *");
+            for (int j = 0; j < succeedingElements.size(); j++) {
+                if (succeedingElements.get(j).tagName().equals("table") && succeedingElements.get(j)
+                        .className().equals("F")) {
+                    Element generalInfo = succeedingElements.get(j);
+                    Elements rows = generalInfo.select("th.F");
+                    for (Element row : rows) {
+                        if (!row.text().isEmpty())
+                            list.add(row.text());
+                    }
+                    map.put(dateArray[i], list);
+                }
+                if (succeedingElements.get(j).tagName().equals("hr")) break;
             }
-            map.put(dateArray[i], list);
+            map.put(normalizedDateArray[i], list); // empty list since no absent classes for the
+            // day were found.
         }
         return map;
     }
@@ -171,49 +200,51 @@ public class VertretungsplanParser implements LoginConstants {
      * of the day and the value is an ArrayList of the individual items of the
      * Vertretungsplan. The items are once again separated into 6 fields: period,
      * class, subject, vertreten_durch, room and comment.
-     *
      */
     public HashMap<String, ArrayList<String[]>> getVertretungsplan(Document doc) {
 
-        String[] dateArray = getAvailableVertretungsplaeneDates(doc);
+        String[] normalizedDateArray = getAvailableVertretungsplaeneDates(doc);
+        String[] rawDateArray = getRawAvailableVertretungsplaeneDates(doc);
         HashMap<String, ArrayList<String[]>> map =
                 new HashMap<>();
 
-	/*
-	 * All Vertretungsplan tables are preceded by an h4 heading and are of class
-	 * s.
-	 */
-        Elements vertretungsplaene = doc.select("h4 + table.s");
-
-        for (int i = 0; i < vertretungsplaene.size(); i++) {
-            Element table = vertretungsplaene.get(i);
-            Elements periods = table.select("tr.s");
+        for (int i = 0; i < rawDateArray.length; i++) {
             ArrayList<String[]> listVertretungen = new ArrayList<>();
-
-            for (Element period : periods) {
-		/*
-		 * Every period has a header with a rowspan attribute that specifies
-		 * the number of Vertretungen of the period. For example, if a period
-		 * has a header rowspan attribute with the value 7, that means, that
-		 * there 7 Vertretungen for this period.
-		 */
-                int numberOfVertretungen =
-                        Integer.valueOf(period.select("th.s").attr("rowspan"));
-                Element next = null;
-                for (int j = 0; j < numberOfVertretungen; j++) {
-                    if (j == 0) {
-                        next = period;
-                    } else {
-                        next = next.nextElementSibling();
+            Elements succeedingElements = doc.select("a[name=" + rawDateArray[i] + "] ~ *");
+            for (int j = 0; j < succeedingElements.size(); j++) {
+                if (succeedingElements.get(j).tagName().equals("table") && succeedingElements.get(j)
+                        .className().equals("s")) {
+                    Element vertretungsplan = succeedingElements.get(j);
+                    Elements periods = vertretungsplan.select("tr.s");
+                    for (Element period : periods) {
+                    /*
+                     * Every period has a header with a rowspan attribute that specifies
+                     * the number of Vertretungen of the period. For example, if a period
+                     * has a header rowspan attribute with the value 7, that means, that
+                     * there 7 Vertretungen for this period.
+                     */
+                        int numberOfVertretungen =
+                                Integer.valueOf(period.select("th.s").attr("rowspan"));
+                        Element next = null;
+                        for (int k = 0; k < numberOfVertretungen; k++) {
+                            if (k == 0) {
+                                next = period;
+                            } else {
+                                next = next.nextElementSibling();
+                            }
+                            // The table header of class s contains the period number
+                            String periodNumber = period.select("th.s").text();
+                            String[] rowElems =
+                                    splitVertretungsplanRowIntoChunks(next, periodNumber);
+                            listVertretungen.add(rowElems);
+                        }
                     }
-                    // The table header of class s contains the period number
-                    String periodNumber = period.select("th.s").text();
-                    String[] rowElems =
-                            splitVertretungsplanRowIntoChunks(next, periodNumber);
-                    listVertretungen.add(rowElems);
+                    map.put(dateArray[i], listVertretungen);
                 }
+                if (succeedingElements.get(j).tagName().equals("hr")) break;
             }
-            map.put(dateArray[i], listVertretungen);
+            map.put(normalizedDateArray[i], listVertretungen); // empty list since no absent classes for the
+            // day were found.
         }
 
         return map;
@@ -249,7 +280,7 @@ public class VertretungsplanParser implements LoginConstants {
         rowTokens[0] = row.getElementsByTag("th").text();
         Elements rawRowElems = row.select("td");
         for (int i = 1; i <= rawRowElems.size(); i++) {
-            rowTokens[i] = rawRowElems.get(i-1).text();
+            rowTokens[i] = rawRowElems.get(i - 1).text();
         }
         return rowTokens;
     }

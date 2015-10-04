@@ -48,6 +48,12 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_activity);
 
+        if(!this.getSharedPreferences("app_activation", MODE_PRIVATE).getBoolean("app_activated", false)){
+            Intent intent=new Intent(getApplicationContext(),FirstStartActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(mToolbar);

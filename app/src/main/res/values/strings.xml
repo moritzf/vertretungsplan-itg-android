@@ -8,6 +8,15 @@
     <string name="vertretungsplan_header">Vertretungen</string>
     <string name="absent_classes_header">Abwesende Klassen</string>
 
+    <!-- First Start Activity -->
+    <string name="firststart_welcome">Vertretungsplan-App für das Ignaz-Taschner Gymnasium</string>
+    <string name="next">Fortsetzen</string>
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="login">Anmelden</string>
+    <string name="login_failed">Benutzername oder Passwort ist falsch</string>
+    <string name="firststart_login">Bitte melden Sie sich mit den Benutzerinformationen für den Elternbereich an.</string>
+
     <!-- SyncAdapter related -->
     <string name="sync_account_type">vertretungsplan.itgdah.de</string>
     <string name="content_authority">de.itgdah.vertretungsplan</string>

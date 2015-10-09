@@ -26,7 +26,7 @@ import de.itgdah.vertretungsplan.ui.widget.SlidingTabLayout;
 import de.itgdah.vertretungsplan.util.Utility;
 
 /**
- * Created by moritz on 26.05.15.
+ * This class manages the "My Vertretungsplan" screen.
  */
 public class MyVertretungsplanActivity extends BaseActivity {
     @Override
@@ -120,6 +120,10 @@ public class MyVertretungsplanActivity extends BaseActivity {
         unregisterReceiver(syncFinishedReceiver);
     }
 
+    /**
+        Updates the day labels of the tab reel.
+        @return true when successful
+     */
     public boolean updateTabs() {
         boolean success = false;
         Cursor c = getContentResolver().query(Days.CONTENT_URI, new
@@ -140,7 +144,7 @@ public class MyVertretungsplanActivity extends BaseActivity {
     }
 
     /**
-     * Adapter for the Days Pager.
+     * Adapter for the "My Vertretungsplan" days pager.
      */
     public class MyDaysPagerAdapter extends FragmentPagerAdapter {
 

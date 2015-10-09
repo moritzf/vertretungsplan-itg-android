@@ -9,7 +9,7 @@ import android.os.Bundle;
 import de.itgdah.vertretungsplan.data.VertretungsplanContract;
 
 /**
- * Created by moritz on 26.05.15.
+ * Responsible for the "My vertretungsplan" Vertretungen list.
  */
 public class MyDayListFragment extends BaseDayListFragment {
     @Override
